@@ -16,9 +16,10 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package ki.wardrive4;
+package ki.wardrive4.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 /**
@@ -39,5 +40,8 @@ public class Launcher extends Activity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        
+        startActivity(new Intent(this, MapViewer.class));
+        finish();
     }
 }
