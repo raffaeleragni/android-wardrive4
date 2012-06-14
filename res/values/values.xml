@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- API KEY FOR key's MD5:
+         87:3F:39:C4:5E:38:48:85:77:C3:1C:B5:CA:E5:EC:13
+    -->
+    <string name="google_maps_api_key_dbg">0oIw2nwqauIXRjS9mWF9_uUyerVP6inCc7qBZuA</string>
+</resources>

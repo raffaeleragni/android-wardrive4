@@ -11,15 +11,15 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.google.android</groupId>
+            <groupId>android</groupId>
             <artifactId>android</artifactId>
-            <version>4.0.1.2</version>
+            <version>4.0.3_r3</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.android.maps</groupId>
             <artifactId>maps</artifactId>
-            <version>10_r2</version>
+            <version>15_r2</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -37,13 +37,25 @@
             </resource>
         </resources>
         <plugins>
+            <!-- COMPILER -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+            <!-- ANDROID -->
             <plugin>
                 <groupId>com.jayway.maven.plugins.android.generation2</groupId>
-                <artifactId>maven-android-plugin</artifactId>
-                <version>2.9.0-beta-5</version>
+                <artifactId>android-maven-plugin</artifactId>
+                <version>3.2.0</version>
                 <configuration>
                     <sdk>
-                        <!-- platform or api level (api level 4 = platform 1.6)-->
+                        <!-- platform or api level (api level 14 = platform 4.0)-->
                         <platform>15</platform>
                     </sdk>
                     <emulator>
@@ -52,6 +64,9 @@
                     </emulator>
                     <deleteConflictingFiles>true</deleteConflictingFiles>
                     <undeployBeforeDeploy>true</undeployBeforeDeploy>
+                    <sign>
+                        <debug>false</debug>
+                    </sign>
                 </configuration>
                 <extensions>true</extensions>
                 <executions>
@@ -64,14 +79,30 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- SIGN WITH DEBUG KEYSTORE -->
             <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.5.1</version>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                </configuration>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jarsigner-plugin</artifactId>
+                <version>1.2</version>
+                <executions>
+                    <execution>
+                        <id>signing</id>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <inherited>true</inherited>
+                        <configuration>
+                            <includes>
+                                <include>target/*.apk</include>
+                            </includes>
+                            <keystore>docs/debug.keystore</keystore>
+                            <storepass>android</storepass>
+                            <keypass>android</keypass>
+                            <alias>androiddebugkey</alias>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

@@ -1,0 +1,7 @@
+<ContactsSource xmlns:android="http://schemas.android.com/apk/res/android">
+    <ContactsDataKind
+        android:mimeType="vnd.android.cursor.item/vnd.ki.wardrive4.provider.wifi.wifi"
+        android:icon="@drawable/logo"
+        android:summaryColumn="name"
+        android:detailColumn="description"/>
+</ContactsSource>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<sync-adapter
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:contentAuthority="ki.wardrive4.provider.wifi"
+    android:accountType="ki.wardrive4.account"
+    android:userVisible="true"/>

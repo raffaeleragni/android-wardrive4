@@ -1,0 +1,6 @@
+<account-authenticator xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accountType="ki.wardrive4.account"
+    android:icon="@drawable/logo"
+    android:smallIcon="@drawable/logo"
+    android:label="@string/app_name"
+/>
