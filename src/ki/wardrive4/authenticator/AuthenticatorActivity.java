@@ -40,7 +40,7 @@ import ki.wardrive4.provider.wifi.WiFiContract;
 /**
  * Mostly copied from examples.
  *
- * @author Raffaele Ragni <raffaele.ragni@adrialab.it>
+ * @author Raffaele Ragni <raffaele.ragni@gmail.com>
  */
 public class AuthenticatorActivity extends AccountAuthenticatorActivity
 {

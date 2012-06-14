@@ -26,7 +26,7 @@ import android.os.IBinder;
  * Background service (singleton holder) that will return a binding to the
  * authenticator.
  * 
- * @author Raffaele Ragni <raffaele.ragni@adrialab.it>
+ * @author Raffaele Ragni <raffaele.ragni@gmail.com>
  */
 public class AuthenticationService extends Service
 {

@@ -30,7 +30,7 @@ import android.text.TextUtils;
  * System will call methods in this implementation when an account is created,
  * deleted or updated.
  *
- * @author Raffaele Ragni <raffaele.ragni@adrialab.it>
+ * @author Raffaele Ragni <raffaele.ragni@gmail.com>
  */
 public class Authenticator extends AbstractAccountAuthenticator
 {
