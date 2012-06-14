@@ -98,29 +98,6 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
         return null;
     }
 
-    @Override
-    protected Dialog onCreateDialog(int id)
-    {
-        final ProgressDialog dialog = new ProgressDialog(this);
-        dialog.setMessage("Authenticating");
-        dialog.setIndeterminate(true);
-        dialog.setCancelable(true);
-        dialog.setOnCancelListener(new DialogInterface.OnCancelListener()
-        {
-            @Override
-            public void onCancel(DialogInterface dialog)
-            {
-                if (mAuthTask != null)
-                    mAuthTask.cancel(true);
-            }
-        });
-        // We save off the progress dialog in a field so that we can dismiss
-        // it later. We can't just call dismissDialog(0) because the system
-        // can lose track of our dialog if there's an orientation change.
-        mProgressDialog = dialog;
-        return dialog;
-    }
-
     public void handleLogin(View view)
     {
         if (mRequestNewAccount)
@@ -201,7 +178,24 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
 
     private void showProgress()
     {
-        showDialog(0);
+        final ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setMessage("Authenticating");
+        dialog.setIndeterminate(true);
+        dialog.setCancelable(true);
+        dialog.setOnCancelListener(new DialogInterface.OnCancelListener()
+        {
+            @Override
+            public void onCancel(DialogInterface dialog)
+            {
+                if (mAuthTask != null)
+                    mAuthTask.cancel(true);
+            }
+        });
+        // We save off the progress dialog in a field so that we can dismiss
+        // it later. We can't just call dismissDialog(0) because the system
+        // can lose track of our dialog if there's an orientation change.
+        mProgressDialog = dialog;
+        mProgressDialog.show();
     }
 
     private void hideProgress()
@@ -220,7 +214,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
         {
             try
             {
-                return "login here"; //TODO: login(mUsername, mPassword);
+                return AuthenticationUtils.login(mUsername, mPassword);
             }
             catch (Exception ex)
             {

@@ -68,7 +68,7 @@ public class Authenticator extends AbstractAccountAuthenticator
         {
             // Token was saved, reauthenticate to make sure it is correct and
             // still valid.
-            final String authToken = "login here"; // :login(account.name, password);
+            final String authToken = AuthenticationUtils.login(account.name, password);
             if (!TextUtils.isEmpty(authToken))
             {
                 final Bundle result = new Bundle();
