@@ -7,7 +7,7 @@
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
  *   (at your option) any later version.
- *   
+ *
  *   This program is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -47,7 +47,7 @@ public class WiFiContract
         public static final Uri CONTENT_URI =  Uri.parse(BASE_URI + PATH);
         public static final Uri CONTENT_ID_URI_BASE = Uri.parse(BASE_URI + PATH_BYID);
         public static final Uri CONTENT_ID_URI_PATTERN = Uri.parse(BASE_URI + PATH_BYID + "#");
-        public static Uri uriById(long id) {return Uri.parse(BASE_URI + PATH_BYID + id);}
+        public static Uri uriById(String id) {return Uri.parse(BASE_URI + PATH_BYID + id);}
 
         // Content type of many wifis (directory of items)
         public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd."+AUTHORITY+"."+TABLE_NAME;

@@ -16,36 +16,31 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package ki.wardrive4.sync.wifi;
+package ki.wardrive4.utils;
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
- * Remotely synchronizes the WiFi resource.
  *
  * @author Raffaele Ragni <raffaele.ragni@gmail.com>
  */
-public class WiFiSyncService extends Service
+public class SHA1Utils
 {
-    private static final Object sSyncAdapterLock = new Object();
+    private static final String SHA1 = "SHA1";
 
-    private static WiFiSyncAdapter sSyncAdapter = null;
-
-    @Override
-    public void onCreate()
+    public static String sha1(String s) throws NoSuchAlgorithmException
     {
-        synchronized (sSyncAdapterLock)
+        MessageDigest digest = MessageDigest.getInstance(SHA1);
+        String result = "";
+        byte[] data = digest.digest(s.getBytes());
+        for (byte b: data)
         {
-            if (sSyncAdapter == null)
-                sSyncAdapter = new WiFiSyncAdapter(getApplicationContext(), true);
+            String hex = Integer.toHexString(0x0FF & b);
+            if (hex.length() < 2)
+                hex = '0'+hex;
+            result += hex.toLowerCase();
         }
-    }
-
-    @Override
-    public IBinder onBind(Intent intent)
-    {
-        return sSyncAdapter.getSyncAdapterBinder();
+        return result;
     }
 }

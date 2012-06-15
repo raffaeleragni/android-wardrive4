@@ -16,36 +16,29 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package ki.wardrive4.sync.wifi;
+package ki.wardrive4.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.IBinder;
 
 /**
- * Remotely synchronizes the WiFi resource.
+ * Service for periodic triggering of scanning
  *
  * @author Raffaele Ragni <raffaele.ragni@gmail.com>
  */
-public class WiFiSyncService extends Service
+public class ScanService extends Service
 {
-    private static final Object sSyncAdapterLock = new Object();
-
-    private static WiFiSyncAdapter sSyncAdapter = null;
-
-    @Override
-    public void onCreate()
-    {
-        synchronized (sSyncAdapterLock)
-        {
-            if (sSyncAdapter == null)
-                sSyncAdapter = new WiFiSyncAdapter(getApplicationContext(), true);
-        }
-    }
+    private ScanServiceBinderImpl binder = new ScanServiceBinderImpl();
 
     @Override
     public IBinder onBind(Intent intent)
     {
-        return sSyncAdapter.getSyncAdapterBinder();
+        return binder;
+    }
+
+    private class ScanServiceBinderImpl extends Binder implements ScanServiceBinder
+    {
     }
 }

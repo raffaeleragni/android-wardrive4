@@ -7,7 +7,7 @@
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
  *   (at your option) any later version.
- *   
+ *
  *   This program is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -21,7 +21,6 @@ package ki.wardrive4.authenticator;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
@@ -105,7 +104,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
         i.setData(Uri.parse(getResources().getText(R.string.wardrive4_weburl_register).toString()));
         startActivity(i);
     }
-    
+
     public void handleLogin(View view)
     {
         if (mRequestNewAccount)

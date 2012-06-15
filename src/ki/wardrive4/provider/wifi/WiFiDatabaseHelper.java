@@ -7,7 +7,7 @@
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
  *   (at your option) any later version.
- *   
+ *
  *   This program is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -77,7 +77,7 @@ public class WiFiDatabaseHelper extends SQLiteOpenHelper
         + "timestamp integer)",
         // Maps a single WiFi measurement
         "create table wifispot("
-        + "_id integer primary key,"
+        + "_id integer primary key autoincrement,"
         + "fk_wifi text,"
         + "lat real,"
         + "lon real,"
