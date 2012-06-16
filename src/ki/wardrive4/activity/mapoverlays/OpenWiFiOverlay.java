@@ -35,6 +35,8 @@ import ki.wardrive4.provider.wifi.WiFiContract;
  */
 public class OpenWiFiOverlay extends WiFiOverlay
 {
+    private static final int MAX_DRAW = 20;
+    
     private static final Paint STROKE;
     private static final Paint FILL;
     private static final Paint TEXT;
@@ -70,6 +72,10 @@ public class OpenWiFiOverlay extends WiFiOverlay
     @Override
     public void draw(Canvas c, MapView mapView, boolean shadow)
     {
+        // Don't draw unless at zoom 15 or more
+        if (mapView.getZoomLevel() < 15)
+            return;
+        
         GeoPoint topLeft = mapView.getProjection().fromPixels(0, 0);
         GeoPoint bottomRight = mapView.getProjection().fromPixels(mapView.getWidth(), mapView.getHeight());
         String [] geohashBetween = composeGeohashBetween(topLeft, bottomRight);
@@ -92,6 +98,7 @@ public class OpenWiFiOverlay extends WiFiOverlay
             null);
         try
         {
+            int ct = 0;
             while (cur.moveToNext())
             {
                 String ssid = cur.getString(cur.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_SSID));
@@ -101,6 +108,10 @@ public class OpenWiFiOverlay extends WiFiOverlay
                 GeoPoint gp = new GeoPoint((int) (lat * 1E6), (int) (lon * 1E6));
                 
                 drawSingleWiFi(c, mapView, gp, ssid, level, true, STROKE, FILL, TEXT);
+                
+                ct++;
+                if (ct > MAX_DRAW)
+                    break;
             }
         }
         finally
