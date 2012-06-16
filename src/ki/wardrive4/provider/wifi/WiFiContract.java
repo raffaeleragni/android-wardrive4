@@ -64,7 +64,7 @@ public class WiFiContract
         public static final String COLUMN_NAME_LON = "lon";
         public static final String COLUMN_NAME_ALT = "alt";
         public static final String COLUMN_NAME_GEOHASH = "geohash";
-        public static final String COLUMN_NAME_TIMESTAMP = "timespan";
+        public static final String COLUMN_NAME_TIMESTAMP = "timestamp";
 
         // Order by default
         public static final String DEFAULT_ORDER_BY = _ID + " ASC";
@@ -96,7 +96,7 @@ public class WiFiContract
         public static final String COLUMN_NAME_LON = "lon";
         public static final String COLUMN_NAME_ALT = "alt";
         public static final String COLUMN_NAME_GEOHASH = "geohash";
-        public static final String COLUMN_NAME_TIMESTAMP = "timespan";
+        public static final String COLUMN_NAME_TIMESTAMP = "timestamp";
 
         // Order by default
         public static final String DEFAULT_ORDER_BY = _ID + " ASC";

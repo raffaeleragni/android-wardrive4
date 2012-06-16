@@ -1,4 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Wardrive</string>
+    
+    <string name="mapviewer_menu_import">Import</string>
+    
+    <string name="mapviewer_dlg_import_title">Choose import source</string>
+    <string name="mapviewer_dlg_import_oldwardrive">Old wardrive database</string>
+    
+    <string name="mapviewer_dlg_importold_nofilefound_title">Choose import source</string>
+    <string name="mapviewer_dlg_importoldprogress_title">Importing</string>
+    <string name="mapviewer_dlg_importoldprogress_message">Importing networks...</string>
+    
+    <!-- General messages, for example common buttons -->
+    <string name="OK">OK</string>
+    <string name="Cancel">Cancel</string>
+    
 </resources>

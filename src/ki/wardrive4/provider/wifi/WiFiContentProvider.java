@@ -51,7 +51,7 @@ public class WiFiContentProvider extends ContentProvider
         // Maps the URIs to match the constant for the switch selection
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         sUriMatcher.addURI(WiFiContract.AUTHORITY, WiFiContract.WiFi.PATH, URIMATCH_WIFIS);
-        sUriMatcher.addURI(WiFiContract.AUTHORITY, WiFiContract.WiFi.PATH_BYID + "#", URIMATCH_WIFI_BYID);
+        sUriMatcher.addURI(WiFiContract.AUTHORITY, WiFiContract.WiFi.PATH_BYID + "*", URIMATCH_WIFI_BYID);
         sUriMatcher.addURI(WiFiContract.AUTHORITY, WiFiContract.WiFiSpot.PATH, URIMATCH_WIFISPOTS);
         sUriMatcher.addURI(WiFiContract.AUTHORITY, WiFiContract.WiFiSpot.PATH_BYID + "#", URIMATCH_WIFISPOT_BYID);
 
@@ -125,7 +125,7 @@ public class WiFiContentProvider extends ContentProvider
         {
             // Table catalogue
             case URIMATCH_WIFI_BYID:
-                qb.appendWhere(WiFiContract.WiFi._ID + "=" + uri.getPathSegments().get(WiFiContract.WiFi.PATH_BYID_IDPOSITION));
+                qb.appendWhere(WiFiContract.WiFi._ID + "='" + uri.getPathSegments().get(WiFiContract.WiFi.PATH_BYID_IDPOSITION)+"'");
             case URIMATCH_WIFIS:
                 qb.setProjectionMap(sProjectionMap);
                 break;

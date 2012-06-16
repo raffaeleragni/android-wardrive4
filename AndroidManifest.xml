@@ -17,7 +17,8 @@
     
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
 
-    <application android:label="@string/app_name" android:icon="@drawable/logo">
+    <!-- Use the holo dark since few designed icons are for dark backgrounds -->
+    <application android:label="@string/app_name" android:icon="@drawable/logo" android:theme="@android:style/Theme.Holo">
 
         <uses-library android:name="com.google.android.maps"/>
 
