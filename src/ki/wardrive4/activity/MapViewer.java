@@ -20,16 +20,21 @@ package ki.wardrive4.activity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 import java.io.File;
 import ki.wardrive4.R;
+import ki.wardrive4.activity.mapoverlays.ClosedWiFiOverlay;
+import ki.wardrive4.activity.mapoverlays.OpenWiFiOverlay;
+import ki.wardrive4.activity.mapoverlays.WepWiFiOverlay;
 import ki.wardrive4.activity.tasks.ImportOldTask;
 
 /**
@@ -41,6 +46,10 @@ import ki.wardrive4.activity.tasks.ImportOldTask;
  */
 public class MapViewer extends MapActivity
 {
+    private static final String SETTING_LAST_LAT = "last_lat";
+    private static final String SETTING_LAST_LON = "last_lon";
+    private static final String SETTING_LAST_ZOOM = "last_zoom";
+    
     private MapView mMapView;
 
     @Override
@@ -54,8 +63,40 @@ public class MapViewer extends MapActivity
         mMapView = (MapView) findViewById(R.id_mapviewer.mapview);
         // Customizations like this were not possible from the XML
         mMapView.setBuiltInZoomControls(true);
+        
+        // Read the last map center used when the app did exit, and reset it
+        // Also reset the old zoom
+        SharedPreferences settings = getPreferences(MODE_PRIVATE);
+        if (settings.contains(SETTING_LAST_ZOOM))
+            mMapView.getController().setZoom(settings.getInt(SETTING_LAST_ZOOM, mMapView.getZoomLevel()));
+        if (settings.contains(SETTING_LAST_LAT) && settings.contains(SETTING_LAST_LON))
+        {
+            GeoPoint point = new GeoPoint(settings.getInt(SETTING_LAST_LAT, 0), settings.getInt(SETTING_LAST_LON, 0));
+            mMapView.getController().animateTo(point);
+        }
+        
+        // Add overlays
+        mMapView.getOverlays().add(new OpenWiFiOverlay(this));
+        mMapView.getOverlays().add(new WepWiFiOverlay(this));
+        mMapView.getOverlays().add(new ClosedWiFiOverlay(this));
     }
 
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+        
+        // Save the position of the map center for the next program opening
+        // Also save the zoom used
+        GeoPoint point = mMapView.getProjection().fromPixels(mMapView.getWidth() / 2, mMapView.getHeight() / 2);
+        SharedPreferences settings = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putInt(SETTING_LAST_LAT, point.getLatitudeE6());
+        editor.putInt(SETTING_LAST_LON, point.getLongitudeE6());
+        editor.putInt(SETTING_LAST_ZOOM, mMapView.getZoomLevel());
+        editor.commit();
+    }
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
