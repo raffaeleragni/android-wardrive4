@@ -36,11 +36,7 @@ import ki.wardrive4.utils.Geohash;
  */
 public abstract class WiFiOverlay extends Overlay
 {
-    private static final int CIRCLE_RADIUS = 9;
-    
-    private static final int TEXT_SIZE = 12;
-    
-    private static final int INFO_WINDOW_HEIGHT = 18;
+    private static final int CIRCLE_RADIUS = 14;
     
     protected void drawSingleWiFi(Canvas canvas, MapView mapView, GeoPoint geoPoint, String title, int level, boolean showLabels, Paint stroke, Paint fill, Paint text)
     {
@@ -48,19 +44,17 @@ public abstract class WiFiOverlay extends Overlay
         int bigness = (int) (CIRCLE_RADIUS) - (-level)/12;
         bigness = bigness < 1 ? 0 : bigness;
 
-        int lesserMeasure = canvas.getWidth() > canvas.getHeight() ? canvas.getWidth() : canvas.getHeight();
-        double sizeRatio = ((double) lesserMeasure) / 460d;
-        text.setTextSize((int)(TEXT_SIZE * sizeRatio));
+        float textSize = text.getTextSize();
         
-        canvas.drawCircle(point.x, point.y, (int) (CIRCLE_RADIUS*sizeRatio), stroke);
-        canvas.drawCircle(point.x, point.y, (int)(bigness*sizeRatio), fill);
+        canvas.drawCircle(point.x, point.y, CIRCLE_RADIUS, stroke);
+        canvas.drawCircle(point.x, point.y, bigness, fill);
 
         if (showLabels && title != null && title.length() > 0)
         {
-            RectF rect = new RectF(0, 0, getTextWidth(title, text) + 4 * 2, (int)(INFO_WINDOW_HEIGHT * sizeRatio));
-            rect.offset(point.x + (int)(5*sizeRatio), point.y + (int)(5*sizeRatio));
-            canvas.drawRect(rect, fill);
-            canvas.drawText(title, point.x + 9, point.y + (int)(19*sizeRatio), text);
+            RectF rect = new RectF(0, 0, getTextWidth(title, text) + 8, textSize + 4);
+            rect.offset(point.x + CIRCLE_RADIUS - CIRCLE_RADIUS/4, point.y + CIRCLE_RADIUS - CIRCLE_RADIUS/4);
+            canvas.drawRoundRect(rect, textSize/3, textSize/3, fill);
+            canvas.drawText(title, point.x + 14, point.y + textSize*2 - 4, text);
         }
     }
     

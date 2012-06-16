@@ -57,9 +57,12 @@ public class ClosedWiFiOverlay extends WiFiOverlay
         FILL.setAntiAlias(true);
         TEXT.setAntiAlias(true);
         
-        STROKE.setColor(Color.RED);
-        FILL.setColor(Color.RED);
+        STROKE.setARGB(96, 255, 0, 0);
+        FILL.setARGB(96, 255, 0, 0);
         TEXT.setColor(Color.WHITE);
+        
+        TEXT.setTextSize(16);
+        TEXT.setTextAlign(Paint.Align.LEFT);
     }
     
     private Context mContext;

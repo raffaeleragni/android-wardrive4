@@ -57,9 +57,12 @@ public class OpenWiFiOverlay extends WiFiOverlay
         FILL.setAntiAlias(true);
         TEXT.setAntiAlias(true);
         
-        STROKE.setColor(Color.GREEN);
-        FILL.setColor(Color.GREEN);
+        STROKE.setARGB(192, 0, 200, 0);
+        FILL.setARGB(192, 0, 200, 0);
         TEXT.setColor(Color.WHITE);
+        
+        TEXT.setTextSize(16);
+        TEXT.setTextAlign(Paint.Align.LEFT);
     }
     
     private Context mContext;

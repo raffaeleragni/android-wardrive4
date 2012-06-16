@@ -57,9 +57,12 @@ public class WepWiFiOverlay extends WiFiOverlay
         FILL.setAntiAlias(true);
         TEXT.setAntiAlias(true);
         
-        STROKE.setColor(Color.BLUE);
-        FILL.setColor(Color.BLUE);
+        STROKE.setARGB(192, 235, 160, 23);
+        FILL.setARGB(192, 235, 160, 23);
         TEXT.setColor(Color.WHITE);
+        
+        TEXT.setTextSize(16);
+        TEXT.setTextAlign(Paint.Align.LEFT);
     }
     
     private Context mContext;
