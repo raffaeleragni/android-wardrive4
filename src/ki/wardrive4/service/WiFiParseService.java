@@ -26,10 +26,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import java.util.List;
 import ki.wardrive4.data.ScannedWiFi;
+import ki.wardrive4.data.WiFiSecurity;
 import ki.wardrive4.provider.wifi.WiFiContract;
 import ki.wardrive4.utils.Geohash;
 import ki.wardrive4.utils.SHA1Utils;
-import ki.wardrive4.utils.TriangulationUtils;
 
 /**
  * Service to handle the parsing of a WiFi or a list of WiFis connected to a
@@ -98,6 +98,7 @@ public class WiFiParseService extends IntentService
             cv.put(WiFiContract.WiFi.COLUMN_NAME_BSSID, bssid);
             cv.put(WiFiContract.WiFi.COLUMN_NAME_SSID, ssid);
             cv.put(WiFiContract.WiFi.COLUMN_NAME_CAPABILITIES, capabilities);
+            cv.put(WiFiContract.WiFi.COLUMN_NAME_SECURITY, WiFiSecurity.fromCapabilities(capabilities).ordinal());
             cv.put(WiFiContract.WiFi.COLUMN_NAME_LEVEL, level);
             cv.put(WiFiContract.WiFi.COLUMN_NAME_FREQUENCY, frequency);
 

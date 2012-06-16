@@ -58,6 +58,7 @@ public class WiFiContract
         public static final String COLUMN_NAME_BSSID = "bssid";
         public static final String COLUMN_NAME_SSID = "ssid";
         public static final String COLUMN_NAME_CAPABILITIES = "capabilities";
+        public static final String COLUMN_NAME_SECURITY = "security";
         public static final String COLUMN_NAME_LEVEL = "level";
         public static final String COLUMN_NAME_FREQUENCY = "frequency";
         public static final String COLUMN_NAME_LAT = "lat";

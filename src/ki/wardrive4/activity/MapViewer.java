@@ -22,6 +22,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
@@ -34,6 +35,7 @@ import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 import java.io.File;
 import ki.wardrive4.R;
+import ki.wardrive4.data.WiFiSecurity;
 import ki.wardrive4.provider.wifi.WiFiContract;
 import ki.wardrive4.utils.Geohash;
 import ki.wardrive4.utils.SHA1Utils;
@@ -50,13 +52,15 @@ public class MapViewer extends MapActivity
     private MapView mMapView;
 
     @Override
-    protected void onCreate(Bundle arg0)
+    protected void onCreate(Bundle savedInstanceState)
     {
-        super.onCreate(arg0);
+        super.onCreate(savedInstanceState);
+        getWindow().setUiOptions(ActivityInfo.UIOPTION_SPLIT_ACTION_BAR_WHEN_NARROW);
+        
         setContentView(R.layout.mapviewer);
 
         mMapView = (MapView) findViewById(R.id_mapviewer.mapview);
-        //Customizations for the MapView that are not possible from the XML
+        // Customizations like this were not possible from the XML
         mMapView.setBuiltInZoomControls(true);
     }
 
@@ -85,7 +89,6 @@ public class MapViewer extends MapActivity
                             switch (item)
                             {
                                 case 0:
-                                    // TODO: launch the importing intent/activity
                                     File dbFile = new File(Environment.getExternalStorageDirectory(), "wardrive.db3");
                                     if (dbFile.exists() && dbFile.isFile())
                                     {
@@ -183,11 +186,15 @@ public class MapViewer extends MapActivity
                     double lon = c.getDouble(c.getColumnIndex("lon"));
                     double alt = c.getDouble(c.getColumnIndex("alt"));
                     String geohash = new Geohash().encode(lat, lon);
+                    
+                    String capabilities = c.getString(c.getColumnIndex("capabilities"));
+                    WiFiSecurity security = WiFiSecurity.fromCapabilities(capabilities);
 
                     cv.put(WiFiContract.WiFi._ID, id);
                     cv.put(WiFiContract.WiFi.COLUMN_NAME_BSSID, c.getString(c.getColumnIndex("bssid")));
                     cv.put(WiFiContract.WiFi.COLUMN_NAME_SSID, c.getString(c.getColumnIndex("ssid")));
-                    cv.put(WiFiContract.WiFi.COLUMN_NAME_CAPABILITIES, c.getString(c.getColumnIndex("capabilities")));
+                    cv.put(WiFiContract.WiFi.COLUMN_NAME_CAPABILITIES, capabilities);
+                    cv.put(WiFiContract.WiFi.COLUMN_NAME_SECURITY, security.ordinal());
                     cv.put(WiFiContract.WiFi.COLUMN_NAME_LEVEL, c.getInt(c.getColumnIndex("level")));
                     cv.put(WiFiContract.WiFi.COLUMN_NAME_FREQUENCY, c.getInt(c.getColumnIndex("frequency")));
 

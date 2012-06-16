@@ -60,6 +60,7 @@ public class WiFiContentProvider extends ContentProvider
         sProjectionMap.put(WiFiContract.WiFi.COLUMN_NAME_BSSID, WiFiContract.WiFi.COLUMN_NAME_BSSID);
         sProjectionMap.put(WiFiContract.WiFi.COLUMN_NAME_SSID, WiFiContract.WiFi.COLUMN_NAME_SSID);
         sProjectionMap.put(WiFiContract.WiFi.COLUMN_NAME_CAPABILITIES, WiFiContract.WiFi.COLUMN_NAME_CAPABILITIES);
+        sProjectionMap.put(WiFiContract.WiFi.COLUMN_NAME_SECURITY, WiFiContract.WiFi.COLUMN_NAME_SECURITY);
         sProjectionMap.put(WiFiContract.WiFi.COLUMN_NAME_LEVEL, WiFiContract.WiFi.COLUMN_NAME_LEVEL);
         sProjectionMap.put(WiFiContract.WiFi.COLUMN_NAME_FREQUENCY, WiFiContract.WiFi.COLUMN_NAME_FREQUENCY);
         sProjectionMap.put(WiFiContract.WiFi.COLUMN_NAME_LAT, WiFiContract.WiFi.COLUMN_NAME_LAT);

@@ -67,6 +67,7 @@ public class WiFiDatabaseHelper extends SQLiteOpenHelper
         + "bssid text,"
         + "ssid text,"
         + "capabilities text,"
+        + "security integer,"
         + "level integer,"
         + "frequency integer,"
         + "lat real,"

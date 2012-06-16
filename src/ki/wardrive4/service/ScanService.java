@@ -30,15 +30,44 @@ import android.os.IBinder;
  */
 public class ScanService extends Service
 {
-    private ScanServiceBinderImpl binder = new ScanServiceBinderImpl();
+    private ScanServiceBinderImpl mBinder = new ScanServiceBinderImpl();
 
     @Override
     public IBinder onBind(Intent intent)
     {
-        return binder;
+        return mBinder;
     }
 
     private class ScanServiceBinderImpl extends Binder implements ScanServiceBinder
     {
+        @Override
+        public void start()
+        {
+            ScanService.this.start();
+        }
+
+        @Override
+        public void stop()
+        {
+            ScanService.this.stop();
+        }
+
+        @Override
+        public boolean isRunning()
+        {
+            return mRunning;
+        }
+    }
+
+    private boolean mRunning = false;
+    
+    private void start()
+    {
+        mRunning = true;
+    }
+    
+    private void stop()
+    {
+        mRunning = false;
     }
 }
