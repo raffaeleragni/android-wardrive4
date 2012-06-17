@@ -33,6 +33,10 @@
         
         <activity android:name=".authenticator.AuthenticatorActivity" android:theme="@android:style/Theme.Dialog"/>
 
+        <service android:name=".service.ScanService"/>
+
+        <service android:name=".service.WiFiParseService"/>
+
         <!-- WiFi content provider -->
         <provider android:name=".provider.wifi.WiFiContentProvider"
                   android:authorities="ki.wardrive4.provider.wifi"

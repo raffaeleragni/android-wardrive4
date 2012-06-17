@@ -19,23 +19,26 @@
 package ki.wardrive4.activity;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
+import com.google.android.maps.MyLocationOverlay;
 import java.io.File;
 import ki.wardrive4.R;
 import ki.wardrive4.activity.mapoverlays.ClosedWiFiOverlay;
 import ki.wardrive4.activity.mapoverlays.OpenWiFiOverlay;
 import ki.wardrive4.activity.mapoverlays.WepWiFiOverlay;
 import ki.wardrive4.activity.tasks.ImportOldTask;
+import ki.wardrive4.service.ScanService;
+import ki.wardrive4.service.ScanServiceBinder;
 
 /**
  * The main map viewer screen, a map showing WiFis currently in database.
@@ -51,7 +54,9 @@ public class MapViewer extends MapActivity
     private static final String SETTING_LAST_ZOOM = "last_zoom";
     
     private MapView mMapView;
-
+    private Menu mMenu = null;
+    private boolean mServiceRunning = false;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -79,8 +84,39 @@ public class MapViewer extends MapActivity
         mMapView.getOverlays().add(new OpenWiFiOverlay(this));
         mMapView.getOverlays().add(new WepWiFiOverlay(this));
         mMapView.getOverlays().add(new ClosedWiFiOverlay(this));
+        // The my-location gmaps overlay
+        mMapView.getOverlays().add(new MyLocationOverlay(this, mMapView));
+        
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ScanService.BROADCAST_ACTION_STARTED);
+        filter.addAction(ScanService.BROADCAST_ACTION_STOPPED);
+        registerReceiver(mServiceReceiver, filter);
+        
+        mServiceRunning = ScanService.isRunning(this);
     }
-
+    
+    /**
+     * Service may be controlled also by other future parts, so rely on the
+     * broadcast receiving to know when it's started and stopped.
+     */
+    private BroadcastReceiver mServiceReceiver = new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            if (ScanService.BROADCAST_ACTION_STARTED.equals(intent.getAction()))
+            {
+                mServiceRunning = true;
+                updateServiceButton();
+            }
+            else if (ScanService.BROADCAST_ACTION_STOPPED.equals(intent.getAction()))
+            {
+                mServiceRunning = false;
+                updateServiceButton();
+            }
+        }
+    };
+    
     @Override
     protected void onStop()
     {
@@ -102,6 +138,7 @@ public class MapViewer extends MapActivity
     {
         MenuInflater mi = getMenuInflater();
         mi.inflate(R.menu.mapviewer, menu);
+        mMenu = menu;
         return true;
     }
 
@@ -111,40 +148,10 @@ public class MapViewer extends MapActivity
         switch (item.getItemId())
         {
             case R.id_mapviewer_menu.importwifis:
-                final CharSequence[] items = {getText(R.string.mapviewer_dlg_import_oldwardrive)};
-                new AlertDialog.Builder(this)
-                    .setTitle(R.string.mapviewer_dlg_import_title)
-                    .setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(DialogInterface dialog, int item)
-                        {
-                            switch (item)
-                            {
-                                case 0:
-                                    File dbFile = new File(Environment.getExternalStorageDirectory(), "wardrive.db3");
-                                    if (dbFile.exists() && dbFile.isFile())
-                                        // Start the background task
-                                        new ImportOldTask(MapViewer.this).execute(dbFile);
-                                    else
-                                        // Alert error for not finding a correct file
-                                        new AlertDialog.Builder(MapViewer.this)
-                                            .setTitle(R.string.mapviewer_dlg_importold_nofilefound_title)
-                                            .setNegativeButton(R.string.OK, new DialogInterface.OnClickListener()
-                                            {
-                                                @Override
-                                                public void onClick(DialogInterface di, int i)
-                                                {
-                                                    di.dismiss();
-                                                }
-                                            })
-                                            .create().show();
-                                    break;
-                            }
-                            dialog.dismiss();
-                        }
-                    })
-                    .create().show();
+                onImportMenuItemClick();
+                break;
+            case R.id_mapviewer_menu.scanning:
+                onScanningMenuItemClick();
                 break;
         }
         return true;
@@ -156,4 +163,77 @@ public class MapViewer extends MapActivity
         // No route gets displayed in wardrive, only WiFi points.
         return false;
     }
+    
+    /**
+     * Update the menu button depending on the service status.
+     */
+    private void updateServiceButton()
+    {
+        if (mMenu == null)
+            return;
+        
+        MenuItem item = mMenu.findItem(R.id_mapviewer_menu.scanning);
+        if (mServiceRunning)
+        {
+            item.setIcon(getResources().getDrawable(R.drawable.ic_scanning_on));
+            item.setTitle(R.string.mapviewer_menu_scanning);
+        }
+        else
+        {
+            item.setIcon(getResources().getDrawable(R.drawable.ic_scanning_off));
+            item.setTitle(R.string.mapviewer_menu_start_scanning);
+        }
+    }
+    
+    private void onScanningMenuItemClick()
+    {
+        Intent i = new Intent(this, ScanService.class);
+        if (mServiceRunning)
+            stopService(i);
+        else
+            startService(i);
+    }
+    
+    /**
+     * Launch the import of WiFis.
+     */
+    private void onImportMenuItemClick()
+    {
+        final CharSequence[] items = {getText(R.string.mapviewer_dlg_import_oldwardrive)};
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.mapviewer_dlg_import_title)
+            .setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialog, int item)
+                {
+                    switch (item)
+                    {
+                        case 0:
+                            File dbFile = new File(Environment.getExternalStorageDirectory(), "wardrive.db3");
+                            if (dbFile.exists() && dbFile.isFile())
+                                // Start the background task
+                                new ImportOldTask(MapViewer.this).execute(dbFile);
+                            else
+                                // Alert error for not finding a correct file
+                                new AlertDialog.Builder(MapViewer.this)
+                                    .setTitle(R.string.mapviewer_dlg_importold_nofilefound_title)
+                                    .setNegativeButton(R.string.OK, new DialogInterface.OnClickListener()
+                                    {
+                                        @Override
+                                        public void onClick(DialogInterface di, int i)
+                                        {
+                                            di.dismiss();
+                                        }
+                                    })
+                                    .create().show();
+                            break;
+                    }
+                    dialog.dismiss();
+                }
+            })
+            .create().show();
+    }
+    
+    
 }

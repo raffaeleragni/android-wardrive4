@@ -3,6 +3,8 @@
     <string name="app_name">Wardrive</string>
     
     <string name="mapviewer_menu_import">Import</string>
+    <string name="mapviewer_menu_start_scanning">Start scanning</string>
+    <string name="mapviewer_menu_scanning">Scanning...</string>
     
     <string name="mapviewer_dlg_import_title">Choose import source</string>
     <string name="mapviewer_dlg_import_oldwardrive">Old wardrive database</string>
