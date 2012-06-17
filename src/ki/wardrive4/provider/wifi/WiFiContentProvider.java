@@ -77,6 +77,7 @@ public class WiFiContentProvider extends ContentProvider
         sProjectionMapSpots.put(WiFiContract.WiFiSpot.COLUMN_NAME_ALT, WiFiContract.WiFiSpot.COLUMN_NAME_ALT);
         sProjectionMapSpots.put(WiFiContract.WiFiSpot.COLUMN_NAME_GEOHASH, WiFiContract.WiFiSpot.COLUMN_NAME_GEOHASH);
         sProjectionMapSpots.put(WiFiContract.WiFiSpot.COLUMN_NAME_TIMESTAMP, WiFiContract.WiFiSpot.COLUMN_NAME_TIMESTAMP);
+        sProjectionMapSpots.put(WiFiContract.WiFiSpot.COLUMN_NAME_LEVEL, WiFiContract.WiFiSpot.COLUMN_NAME_LEVEL);
     }
 
     private WiFiDatabaseHelper mWiFiDatabaseHelper;
@@ -119,8 +120,6 @@ public class WiFiContentProvider extends ContentProvider
     {
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
-        qb.setTables(WiFiContract.WiFi.TABLE_NAME);
-
         // Change projection and table name depending on URI
         switch (sUriMatcher.match(uri))
         {
@@ -128,12 +127,14 @@ public class WiFiContentProvider extends ContentProvider
             case URIMATCH_WIFI_BYID:
                 qb.appendWhere(WiFiContract.WiFi._ID + "='" + uri.getPathSegments().get(WiFiContract.WiFi.PATH_BYID_IDPOSITION)+"'");
             case URIMATCH_WIFIS:
+                qb.setTables(WiFiContract.WiFi.TABLE_NAME);
                 qb.setProjectionMap(sProjectionMap);
                 break;
             // Table catalogue
             case URIMATCH_WIFISPOT_BYID:
                 qb.appendWhere(WiFiContract.WiFiSpot._ID + "=" + uri.getPathSegments().get(WiFiContract.WiFiSpot.PATH_BYID_IDPOSITION));
             case URIMATCH_WIFISPOTS:
+                qb.setTables(WiFiContract.WiFiSpot.TABLE_NAME);
                 qb.setProjectionMap(sProjectionMapSpots);
                 break;
             default:
@@ -224,7 +225,7 @@ public class WiFiContentProvider extends ContentProvider
                     whereArgs);
                 break;
             case URIMATCH_WIFI_BYID:
-                finalWhere = WiFiContract.WiFi._ID + "=" + uri.getPathSegments().get(WiFiContract.WiFi.PATH_BYID_IDPOSITION);
+                finalWhere = WiFiContract.WiFi._ID + "='" + uri.getPathSegments().get(WiFiContract.WiFi.PATH_BYID_IDPOSITION) + "'";
                 finalWhere = where != null ? finalWhere + " AND " + where : finalWhere;
                 count = db.delete(
                     WiFiContract.WiFi.TABLE_NAME,
@@ -271,7 +272,7 @@ public class WiFiContentProvider extends ContentProvider
                     whereArgs);
                 break;
             case URIMATCH_WIFI_BYID:
-                finalWhere = WiFiContract.WiFi._ID + "=" + uri.getPathSegments().get(WiFiContract.WiFi.PATH_BYID_IDPOSITION);
+                finalWhere = WiFiContract.WiFi._ID + "='" + uri.getPathSegments().get(WiFiContract.WiFi.PATH_BYID_IDPOSITION) + "'";
                 finalWhere = where != null ? finalWhere + " AND " + where : finalWhere;
                 count = db.update(
                     WiFiContract.WiFi.TABLE_NAME,

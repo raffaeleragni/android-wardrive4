@@ -48,9 +48,9 @@ public class WiFiParseService extends IntentService
     
     public static final String PAR_WIFIS = "wifis";
 
-    public WiFiParseService(String name)
+    public WiFiParseService()
     {
-        super(name);
+        super(WiFiParseService.class.getSimpleName());
     }
 
     @Override
@@ -105,7 +105,6 @@ public class WiFiParseService extends IntentService
             cv.put(WiFiContract.WiFi.COLUMN_NAME_SSID, ssid);
             cv.put(WiFiContract.WiFi.COLUMN_NAME_CAPABILITIES, capabilities);
             cv.put(WiFiContract.WiFi.COLUMN_NAME_SECURITY, WiFiSecurity.fromCapabilities(capabilities).ordinal());
-            cv.put(WiFiContract.WiFi.COLUMN_NAME_LEVEL, level);
             cv.put(WiFiContract.WiFi.COLUMN_NAME_FREQUENCY, frequency);
 
             // Check if exists record
@@ -136,14 +135,14 @@ public class WiFiParseService extends IntentService
             int count = 0;
             Cursor c = getContentResolver().query(
                 WiFiContract.WiFiSpot.CONTENT_URI,
-                new String[]{"count("+WiFiContract.WiFiSpot._ID+")"},
+                new String[]{"count("+WiFiContract.WiFiSpot._ID+") as count"},
                 WiFiContract.WiFiSpot.COLUMN_NAME_FK_WIFI + " = ?",
                 new String[]{id},
                 null);
             try
             {
                 if (c.moveToNext())
-                    count = c.getInt(c.getColumnIndex(WiFiContract.WiFiSpot._ID));
+                    count = c.getInt(c.getColumnIndex("count"));
             }
             finally
             {
@@ -161,6 +160,7 @@ public class WiFiParseService extends IntentService
                         WiFiContract.WiFiSpot.COLUMN_NAME_LON,
                         WiFiContract.WiFiSpot.COLUMN_NAME_ALT,
                         WiFiContract.WiFiSpot.COLUMN_NAME_GEOHASH,
+                        WiFiContract.WiFiSpot.COLUMN_NAME_LEVEL,
                         WiFiContract.WiFiSpot.COLUMN_NAME_TIMESTAMP
                     },
                     WiFiContract.WiFiSpot.COLUMN_NAME_FK_WIFI + " = ?",
@@ -175,6 +175,7 @@ public class WiFiParseService extends IntentService
                         cv.put(WiFiContract.WiFi.COLUMN_NAME_LON, c.getDouble(c.getColumnIndex(WiFiContract.WiFiSpot.COLUMN_NAME_LON)));
                         cv.put(WiFiContract.WiFi.COLUMN_NAME_ALT, c.getDouble(c.getColumnIndex(WiFiContract.WiFiSpot.COLUMN_NAME_ALT)));
                         cv.put(WiFiContract.WiFi.COLUMN_NAME_GEOHASH, c.getDouble(c.getColumnIndex(WiFiContract.WiFiSpot.COLUMN_NAME_GEOHASH)));
+                        cv.put(WiFiContract.WiFi.COLUMN_NAME_LEVEL, c.getDouble(c.getColumnIndex(WiFiContract.WiFiSpot.COLUMN_NAME_LEVEL)));
                         cv.put(WiFiContract.WiFi.COLUMN_NAME_TIMESTAMP, c.getDouble(c.getColumnIndex(WiFiContract.WiFiSpot.COLUMN_NAME_TIMESTAMP)));
                         getContentResolver().update(WiFiContract.WiFi.uriById(id), cv, null, null);
                     }
@@ -184,11 +185,49 @@ public class WiFiParseService extends IntentService
                     c.close();
                 }
             }
-            // Or, of more records are present, proceed with the triangulation calculation
+            // Or, of more records are present, proceed with the average calculation,
+            // timestamp and level are taken as MAX.
+            // (leave out triangulation for now)
             else if (count > 1)
             {
-                // TODO: Update WiFi head record's position & geohash
-                // by triangulation of the current available Spots on database
+                c = getContentResolver().query(WiFiContract.WiFiSpot.CONTENT_URI,
+                    new String[]
+                    {
+                        "avg("+WiFiContract.WiFiSpot.COLUMN_NAME_LAT+") as lat",
+                        "avg("+WiFiContract.WiFiSpot.COLUMN_NAME_LON+") as lon",
+                        "avg("+WiFiContract.WiFiSpot.COLUMN_NAME_ALT+") as alt",
+                        "max("+WiFiContract.WiFiSpot.COLUMN_NAME_LEVEL+") as level",
+                        "max("+WiFiContract.WiFiSpot.COLUMN_NAME_TIMESTAMP+") as timestamp"
+                    },
+                    WiFiContract.WiFiSpot.COLUMN_NAME_FK_WIFI + " = ?",
+                    new String[]{id},
+                    null);
+                try
+                {
+                    if (c.moveToNext())
+                    {
+                        int ct = 1;
+                        double lat = c.getDouble(ct++);
+                        double lon = c.getDouble(ct++);
+                        double alt = c.getDouble(ct++);
+                        String geohash = new Geohash().encode(lat, lon);
+                        int level = c.getInt(ct++);
+                        long timestamp = c.getLong(ct++);
+                        
+                        ContentValues cv = new ContentValues();
+                        cv.put(WiFiContract.WiFi.COLUMN_NAME_LAT, lat);
+                        cv.put(WiFiContract.WiFi.COLUMN_NAME_LON, lon);
+                        cv.put(WiFiContract.WiFi.COLUMN_NAME_ALT, alt);
+                        cv.put(WiFiContract.WiFi.COLUMN_NAME_GEOHASH, geohash);
+                        cv.put(WiFiContract.WiFi.COLUMN_NAME_LEVEL, level);
+                        cv.put(WiFiContract.WiFi.COLUMN_NAME_TIMESTAMP, timestamp);
+                        getContentResolver().update(WiFiContract.WiFi.uriById(id), cv, null, null);
+                    }
+                }
+                finally
+                {
+                    c.close();
+                }
             }
         }
 
@@ -203,9 +242,31 @@ public class WiFiParseService extends IntentService
             cv.put(WiFiContract.WiFiSpot.COLUMN_NAME_GEOHASH, geohash);
             cv.put(WiFiContract.WiFiSpot.COLUMN_NAME_TIMESTAMP, timestamp);
             getContentResolver().insert(WiFiContract.WiFiSpot.CONTENT_URI, cv);
-            // TODO: try to keep only the 3 best needed for triangulation,
-            // and delete the older ones using a rotation/algorythm that evaluates the best ones
-            // (should be the ones with SMALLER level: meaning the most distant)
+            
+            // Try now to keep only the 3 best needed for triangulation.
+            // Select the best three measurements we've got. (higher level)
+            String bestIds = null;
+            Cursor c = getContentResolver().query(WiFiContract.WiFiSpot.CONTENT_URI,
+                new String[]{WiFiContract.WiFiSpot._ID},
+                WiFiContract.WiFiSpot.COLUMN_NAME_FK_WIFI + " = ?",
+                new String[]{id},
+                WiFiContract.WiFiSpot.COLUMN_NAME_LEVEL + " desc");
+            try
+            {
+                for (int i = 0; i < 3 && c.moveToNext(); i++)
+                    bestIds = bestIds == null
+                        ? String.valueOf(c.getInt(c.getColumnIndex(WiFiContract.WiFiSpot._ID)))
+                        : ","+c.getInt(c.getColumnIndex(WiFiContract.WiFiSpot._ID));
+            }
+            finally
+            {
+                c.close();
+            }
+            
+            // Delete anything that is outside of the best three of this wifi.
+            getContentResolver().delete(WiFiContract.WiFiSpot.CONTENT_URI,
+                WiFiContract.WiFiSpot.COLUMN_NAME_FK_WIFI + " = ? and " + WiFiContract.WiFiSpot._ID + " not in (?)",
+                new String[]{id, bestIds});
         }
     }
 }

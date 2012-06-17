@@ -84,7 +84,8 @@ public class WiFiDatabaseHelper extends SQLiteOpenHelper
         + "lon real,"
         + "alt real,"
         + "geohash text,"
-        + "timestamp integer"
+        + "timestamp integer,"
+        + "level integer"
         + ")",
         // Few indexes to optimize search.
         // General wifi search is with lat/lon between AND security type

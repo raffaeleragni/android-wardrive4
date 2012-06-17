@@ -30,10 +30,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
-import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.Parcelable;
 import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
@@ -192,7 +190,7 @@ public class ScanService extends Service
             if (l == null)
                 return;
             
-            List<ScannedWiFi> scannedWiFis = new ArrayList<ScannedWiFi>();
+            ArrayList<ScannedWiFi> scannedWiFis = new ArrayList<ScannedWiFi>();
             
             // For each wifi load a ScannedWiFi, adding the location.
             WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
@@ -211,8 +209,10 @@ public class ScanService extends Service
             
             // Push it through the intent service to insert them.
             Intent i = new Intent(context, WiFiParseService.class);
-            i.putExtra(WiFiParseService.PAR_WIFIS, scannedWiFis.toArray(new Parcelable[]{}));
-            startActivity(i);
+            Bundle b = new Bundle();
+            b.putParcelableArrayList(WiFiParseService.PAR_WIFIS, scannedWiFis);
+            i.putExtras(b);
+            startService(i);
         }
     };
 }
