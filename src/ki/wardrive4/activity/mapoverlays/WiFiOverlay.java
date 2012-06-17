@@ -58,7 +58,7 @@ public abstract class WiFiOverlay extends Overlay
             RectF rect = new RectF(0, 0, getTextWidth(title, text) + 8, textSize + 4);
             rect.offset(point.x + CIRCLE_RADIUS - CIRCLE_RADIUS/4, point.y + CIRCLE_RADIUS - CIRCLE_RADIUS/4);
             canvas.drawRoundRect(rect, textSize/3, textSize/3, fill);
-            canvas.drawText(title, point.x + 14, point.y + textSize*2 - 4, text);
+            canvas.drawText(title, rect.left + 4, rect.top + textSize, text);
         }
     }
     
