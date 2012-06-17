@@ -81,7 +81,7 @@ public class WepWiFiOverlay extends WiFiOverlay
         
         GeoPoint topLeft = mapView.getProjection().fromPixels(0, 0);
         GeoPoint bottomRight = mapView.getProjection().fromPixels(mapView.getWidth(), mapView.getHeight());
-        String [] geohashBetween = composeGeohashBetween(topLeft, bottomRight);
+        String [] between = composeBetween(topLeft, bottomRight);
         
         Cursor cur = mContext.getContentResolver().query(WiFiContract.WiFi.CONTENT_URI,
             new String[]
@@ -91,12 +91,14 @@ public class WepWiFiOverlay extends WiFiOverlay
                 WiFiContract.WiFi.COLUMN_NAME_LAT,
                 WiFiContract.WiFi.COLUMN_NAME_LON
             },
-            "security = ? and geohash between ? and ?",
+            "security = ? and lat between ? and ? and lon between ? and ?",
             new String[]
             {
                 String.valueOf(WiFiSecurity.WEP.ordinal()),
-                geohashBetween[0],
-                geohashBetween[1]
+                between[0],
+                between[1],
+                between[2],
+                between[3]
             },
             null);
         try

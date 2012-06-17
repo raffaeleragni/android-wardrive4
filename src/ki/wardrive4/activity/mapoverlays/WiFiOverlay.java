@@ -75,7 +75,7 @@ public abstract class WiFiOverlay extends Overlay
         return textWidth;
     }
     
-    protected String[] composeGeohashBetween(GeoPoint topLeft, GeoPoint bottomRight)
+    protected String[] composeBetween(GeoPoint topLeft, GeoPoint bottomRight)
     {
         double latFrom = ((double) topLeft.getLatitudeE6()) / 1E6;
         double latTo = ((double) bottomRight.getLatitudeE6()) / 1E6;
@@ -96,7 +96,7 @@ public abstract class WiFiOverlay extends Overlay
         
         return new String[]
         {
-            new Geohash().encode(latFrom, lonFrom), new Geohash().encode(latTo, lonTo)
+            String.valueOf(latFrom), String.valueOf(latTo), String.valueOf(lonFrom), String.valueOf(lonTo)
         };
     }
 }
