@@ -95,8 +95,16 @@ public class MapViewer extends MapActivity
         registerReceiver(mServiceReceiver, filter);
         
         mServiceRunning = ScanService.isRunning(this);
+        updateServiceButton();
         
         Log.i(TAG, "Created activity: MapViewer");
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        unregisterReceiver(mServiceReceiver);
     }
     
     /**
@@ -147,6 +155,7 @@ public class MapViewer extends MapActivity
         MenuInflater mi = getMenuInflater();
         mi.inflate(R.menu.mapviewer, menu);
         mMenu = menu;
+        updateServiceButton();
         return true;
     }
 
