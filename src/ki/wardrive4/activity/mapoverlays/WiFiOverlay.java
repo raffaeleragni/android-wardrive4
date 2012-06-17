@@ -36,13 +36,17 @@ import ki.wardrive4.utils.Geohash;
  */
 public abstract class WiFiOverlay extends Overlay
 {
-    private static final int CIRCLE_RADIUS = 14;
+    private static final int CIRCLE_RADIUS = 20;
     
     protected void drawSingleWiFi(Canvas canvas, MapView mapView, GeoPoint geoPoint, String title, int level, boolean showLabels, Paint stroke, Paint fill, Paint text)
     {
         Point point = mapView.getProjection().toPixels(geoPoint, new Point());
-        int bigness = (int) (CIRCLE_RADIUS) - (-level)/12;
-        bigness = bigness < 1 ? 0 : bigness;
+        // The bigness of the circle. Decrement the circle radius so that a weak
+        // measured wifi results in a smaller circle.
+        int bigness = (int) (CIRCLE_RADIUS) - (int)(((double)-level/99d)*(double)CIRCLE_RADIUS);
+        // Circle must be at least 2 pixel big, but also at max CIRCLE_RADIUS-1.
+        bigness = bigness < 2 ? 2 : bigness;
+        bigness = bigness > CIRCLE_RADIUS-1 ? CIRCLE_RADIUS-1 : bigness;
 
         float textSize = text.getTextSize();
         
