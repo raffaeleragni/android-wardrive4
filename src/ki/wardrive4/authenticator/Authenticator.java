@@ -23,6 +23,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
+import ki.wardrive4.C;
 
 /**
  * Authentication interfacing to system.
@@ -34,6 +36,8 @@ import android.text.TextUtils;
  */
 public class Authenticator extends AbstractAccountAuthenticator
 {
+    private static final String TAG = C.PACKAGE+"/"+Authenticator.class.getSimpleName();
+    
     private static final String ERR_INVALID_TOKEN_TYPE = "invalid authTokenType";
 
     private final Context mContext;
@@ -71,6 +75,8 @@ public class Authenticator extends AbstractAccountAuthenticator
             final String authToken = AuthenticationUtils.login(account.name, password);
             if (!TextUtils.isEmpty(authToken))
             {
+                Log.i(TAG, "Token Authenticated for user " + account.name);
+                
                 final Bundle result = new Bundle();
                 result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
                 result.putString(AccountManager.KEY_ACCOUNT_TYPE, AuthenticationConst.ACCOUNT_TYPE);
@@ -98,7 +104,11 @@ public class Authenticator extends AbstractAccountAuthenticator
         Account[] accounts = am.getAccountsByType(AuthenticationConst.ACCOUNT_TYPE);
         // Allow only one account for this type.
         if (accounts.length > 0)
+        {
+            if (C.DEBUG)
+                Log.d(TAG, "Tried to add an account with one already existing.");
             return null;
+        }
 
         // Intent that will prompt for a username and password.
         final Intent intent = new Intent(mContext, AuthenticatorActivity.class);

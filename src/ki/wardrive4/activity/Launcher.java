@@ -21,6 +21,8 @@ package ki.wardrive4.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import ki.wardrive4.C;
 
 /**
  * Launcher entry point.
@@ -36,6 +38,8 @@ import android.os.Bundle;
  */
 public class Launcher extends Activity
 {
+    private static final String TAG = C.PACKAGE+"/"+Launcher.class.getSimpleName();
+    
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -43,5 +47,7 @@ public class Launcher extends Activity
         
         startActivity(new Intent(this, MapViewer.class));
         finish();
+        
+        Log.i(TAG, "Created activity: Launcher");
     }
 }

@@ -24,7 +24,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import java.util.List;
+import ki.wardrive4.C;
 import ki.wardrive4.data.ScannedWiFi;
 import ki.wardrive4.data.WiFiSecurity;
 import ki.wardrive4.provider.wifi.WiFiContract;
@@ -42,6 +44,8 @@ import ki.wardrive4.utils.SHA1Utils;
  */
 public class WiFiParseService extends IntentService
 {
+    private static final String TAG = C.PACKAGE+"/"+WiFiParseService.class.getSimpleName();
+    
     public static final String PAR_WIFIS = "wifis";
 
     public WiFiParseService(String name)
@@ -59,6 +63,8 @@ public class WiFiParseService extends IntentService
         List<ScannedWiFi> wifis = bundle.<ScannedWiFi>getParcelableArrayList(PAR_WIFIS);
         if (wifis == null || wifis.isEmpty())
             return;
+        
+        Log.i(TAG, "Received "+wifis.size()+" wifis for parsing.");
 
         // Launch parsing on the background thread
         new ParseWiFiAsyncTask().execute(wifis);

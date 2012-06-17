@@ -25,7 +25,9 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
+import android.util.Log;
 import java.io.File;
+import ki.wardrive4.C;
 import ki.wardrive4.R;
 import ki.wardrive4.data.WiFiSecurity;
 import ki.wardrive4.provider.wifi.WiFiContract;
@@ -39,6 +41,8 @@ import ki.wardrive4.utils.SHA1Utils;
  */
 public class ImportOldTask extends AsyncTask<File, Integer, Void>
 {
+    private static final String TAG = C.PACKAGE+"/"+ImportOldTask.class.getSimpleName();
+    
     private ProgressDialog progressDialog = null;
     
     private Context mContext;
@@ -51,6 +55,8 @@ public class ImportOldTask extends AsyncTask<File, Integer, Void>
     @Override
     protected Void doInBackground(File... paramss)
     {
+        Log.i(TAG, "Launching ImportOldTask");
+        
         File databaseFile = paramss[0];
         int ct = 1;
         SQLiteDatabase db = SQLiteDatabase.openDatabase(databaseFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READONLY);

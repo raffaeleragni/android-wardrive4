@@ -30,10 +30,10 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
-import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcelable;
+import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -48,36 +48,22 @@ import ki.wardrive4.data.ScannedWiFi;
  */
 public class ScanService extends Service
 {
+    private static final String TAG = C.PACKAGE+"/"+ScanService.class.getSimpleName();
+    
     public static final String BROADCAST_ACTION_STARTED = C.PACKAGE+".ScanService.STARTED";
     public static final String BROADCAST_ACTION_STOPPED = C.PACKAGE+".ScanService.STOPPED";
     
-    private ScanServiceBinderImpl mBinder = new ScanServiceBinderImpl();
+//    Do not expose a binder for now
+//    private ScanServiceBinder mScanServiceBinder = new ScanServiceBinder();
+//    public class ScanServiceBinder extends Binder
+//    {
+//        public ScanService getService(){ return ScanService.this; }
+//    }
 
     @Override
     public IBinder onBind(Intent intent)
     {
-        return mBinder;
-    }
-
-    private class ScanServiceBinderImpl extends Binder implements ScanServiceBinder
-    {
-        @Override
-        public void start()
-        {
-            ScanService.this.start();
-        }
-
-        @Override
-        public void stop()
-        {
-            ScanService.this.stop();
-        }
-
-        @Override
-        public boolean isRunning()
-        {
-            return mRunning;
-        }
+        return null;
     }
 
     @Override
@@ -91,6 +77,8 @@ public class ScanService extends Service
     {
         super.onCreate();
         start();
+        
+        Log.i(TAG, "Service started");
     }
 
     @Override
@@ -98,13 +86,15 @@ public class ScanService extends Service
     {
         super.onDestroy();
         stop();
+        
+        Log.i(TAG, "Service stopped");
     }
     
     /**
      * Static way to know if this service is running.
      * 
-     * This is a 'running' as intended in Android: service being instantiated
-     * and running.
+     * This is a 'running' as intended in Android: service being instantiated.
+     * Useful when the service is not controlled by the binder.
      * 
      * @return true for running
      */
@@ -118,8 +108,6 @@ public class ScanService extends Service
     }
     
     // -------------------------------------------------------------------------
-    
-    private boolean mRunning = false;
     
     // Queue that will keep the locations when wifi scan was started, so that
     // each wifi scan result pops from the queue his own location value.
@@ -141,8 +129,6 @@ public class ScanService extends Service
         LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 10, mLocationListener);
         
-        mRunning = true;
-        
         // Sends a broadcast, so that if some third party wants to know.
         // This also allows to other parts of this application to start/stop the
         // service and let every part know of it.
@@ -157,8 +143,6 @@ public class ScanService extends Service
         
         // Stops wifi scanning receiver
         unregisterReceiver(mWiFiScanBroadcastReceiver);
-        
-        mRunning = false;
         
         // Sends a broadcast, so that if some third party wants to know.
         // This also allows to other parts of this application to start/stop the

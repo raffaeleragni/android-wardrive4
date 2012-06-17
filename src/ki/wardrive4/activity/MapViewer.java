@@ -23,7 +23,7 @@ import android.content.*;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.IBinder;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,13 +32,13 @@ import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 import java.io.File;
+import ki.wardrive4.C;
 import ki.wardrive4.R;
 import ki.wardrive4.activity.mapoverlays.ClosedWiFiOverlay;
 import ki.wardrive4.activity.mapoverlays.OpenWiFiOverlay;
 import ki.wardrive4.activity.mapoverlays.WepWiFiOverlay;
 import ki.wardrive4.activity.tasks.ImportOldTask;
 import ki.wardrive4.service.ScanService;
-import ki.wardrive4.service.ScanServiceBinder;
 
 /**
  * The main map viewer screen, a map showing WiFis currently in database.
@@ -49,6 +49,8 @@ import ki.wardrive4.service.ScanServiceBinder;
  */
 public class MapViewer extends MapActivity
 {
+    private static final String TAG = C.PACKAGE+"/"+MapActivity.class.getSimpleName();
+    
     private static final String SETTING_LAST_LAT = "last_lat";
     private static final String SETTING_LAST_LON = "last_lon";
     private static final String SETTING_LAST_ZOOM = "last_zoom";
@@ -93,6 +95,8 @@ public class MapViewer extends MapActivity
         registerReceiver(mServiceReceiver, filter);
         
         mServiceRunning = ScanService.isRunning(this);
+        
+        Log.i(TAG, "Created activity: MapViewer");
     }
     
     /**
@@ -106,11 +110,15 @@ public class MapViewer extends MapActivity
         {
             if (ScanService.BROADCAST_ACTION_STARTED.equals(intent.getAction()))
             {
+                if (C.DEBUG) Log.d(TAG, "Noticed service as started");
+                
                 mServiceRunning = true;
                 updateServiceButton();
             }
             else if (ScanService.BROADCAST_ACTION_STOPPED.equals(intent.getAction()))
             {
+                if (C.DEBUG) Log.d(TAG, "Noticed service as stopped");
+                
                 mServiceRunning = false;
                 updateServiceButton();
             }
@@ -187,6 +195,8 @@ public class MapViewer extends MapActivity
     
     private void onScanningMenuItemClick()
     {
+        if (C.DEBUG) Log.d(TAG, "Toggling service scanning");
+        
         Intent i = new Intent(this, ScanService.class);
         if (mServiceRunning)
             stopService(i);
