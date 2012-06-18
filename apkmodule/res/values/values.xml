@@ -4,5 +4,6 @@
          36:B9:D7:6F:FB:1A:56:32:D7:1A:26:CE:35:39:1F:9E
     -->
     <string name="google_maps_api_key_dbg">0oIw2nwqauIUVxS2RXShNyf-AV92LFSUep6hGsw</string>
-    <string name="wardrive4_weburl_register">http://www.wardrive.org/register.html</string>
+    <string name="wardrive4_weburl_register">http://www.wardrive.org/wardrive4/register.html</string>
+    <string name="wardrive4_weburl_ajaxlogin">http://www.wardrive.org/wardrive4/ajaxlogin</string>
 </resources>
