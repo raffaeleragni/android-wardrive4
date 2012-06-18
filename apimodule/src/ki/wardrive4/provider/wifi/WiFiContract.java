@@ -20,7 +20,7 @@ package ki.wardrive4.provider.wifi;
 
 import android.net.Uri;
 import android.provider.BaseColumns;
-import ki.wardrive4.C;
+import ki.wardrive4.APIConsts;
 
 /**
  * Contract class defining the WiFi database structure.
@@ -30,7 +30,7 @@ import ki.wardrive4.C;
 public class WiFiContract
 {
     // Unique identifier for this contract of content provider.
-    public static final String AUTHORITY = C.PACKAGE+".provider.wifi";
+    public static final String AUTHORITY = APIConsts.PACKAGE+".provider.wifi";
     // URI for the content provider.
     public static final String BASE_URI = "content://"+AUTHORITY+"/";
 
