@@ -108,16 +108,17 @@ public class ScanService extends Service
     
     // -------------------------------------------------------------------------
     
-    // Queue that will keep the locations when wifi scan was started, so that
-    // each wifi scan result pops from the queue his own location value.
-    // This can solve the problem of a synchronized mechanism like in old
-    // wardrive: to each scan issued, there is an element in this queue.
-    private Queue<Location> mLocationsQueue = new ConcurrentLinkedQueue<Location>();
+    // Lock used to prevent overwriting of the mCurrentLocation pointer while
+    // the parsing of the wifis is reading it's properties.
+    private final Object CURRENT_LOCATION_LOCK = new Object();
+    
+    // Current location to be read when wifi scan is ready to parse data.
+    private volatile Location mCurrentLocation = null;
     
     private void start()
     {
-        // Reset the locations Queue
-        mLocationsQueue.clear();
+        // Reset the location
+        mCurrentLocation = null;
         
         // Register the broadcast receiver for the wifi scanning.
         IntentFilter wifiIntent = new IntentFilter();
@@ -158,7 +159,10 @@ public class ScanService extends Service
                 return;
             
             WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
-            mLocationsQueue.add(location);
+            synchronized (CURRENT_LOCATION_LOCK)
+            {
+                mCurrentLocation = location;
+            }
             wm.startScan();
         }
 
@@ -186,9 +190,16 @@ public class ScanService extends Service
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            Location l = mLocationsQueue.poll();
-            if (l == null)
-                return;
+            double lat, lon, alt;
+            synchronized (CURRENT_LOCATION_LOCK)
+            {
+                if (mCurrentLocation == null)
+                    return;
+
+                lat = mCurrentLocation.getLatitude();
+                lon = mCurrentLocation.getLongitude();
+                alt = mCurrentLocation.getAltitude();
+            }
             
             ArrayList<ScannedWiFi> scannedWiFis = new ArrayList<ScannedWiFi>();
             
@@ -202,9 +213,9 @@ public class ScanService extends Service
                     result.capabilities,
                     result.level,
                     result.frequency,
-                    l.getLatitude(),
-                    l.getLongitude(),
-                    l.getAltitude(), 
+                    lat,
+                    lon,
+                    alt, 
                     System.currentTimeMillis()));
             
             // Push it through the intent service to insert them.
