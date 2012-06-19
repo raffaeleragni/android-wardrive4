@@ -7,7 +7,7 @@
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
  *   (at your option) any later version.
- *   
+ *
  *   This program is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -50,27 +50,28 @@ import ki.wardrive4.service.ScanService;
 public class MapViewer extends MapActivity
 {
     private static final String TAG = C.PACKAGE+"/"+MapActivity.class.getSimpleName();
-    
+
     private static final String SETTING_LAST_LAT = "last_lat";
     private static final String SETTING_LAST_LON = "last_lon";
     private static final String SETTING_LAST_ZOOM = "last_zoom";
-    
+
     private MapView mMapView;
     private Menu mMenu = null;
     private boolean mServiceRunning = false;
-    
+    private MyLocationOverlay mMyLocationOverlay;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         getWindow().setUiOptions(ActivityInfo.UIOPTION_SPLIT_ACTION_BAR_WHEN_NARROW);
-        
+
         setContentView(R.layout.mapviewer);
 
         mMapView = (MapView) findViewById(R.id_mapviewer.mapview);
         // Customizations like this were not possible from the XML
         mMapView.setBuiltInZoomControls(true);
-        
+
         // Read the last map center used when the app did exit, and reset it
         // Also reset the old zoom
         SharedPreferences settings = getPreferences(MODE_PRIVATE);
@@ -81,22 +82,34 @@ public class MapViewer extends MapActivity
             GeoPoint point = new GeoPoint(settings.getInt(SETTING_LAST_LAT, 0), settings.getInt(SETTING_LAST_LON, 0));
             mMapView.getController().animateTo(point);
         }
-        
-        // Add overlays
+
+        // The my-location gmaps overlay
+        mMyLocationOverlay = new MyLocationOverlay(this, mMapView);
+        mMapView.getOverlays().add(mMyLocationOverlay);
+
+        // Center the map the first time a location is obtained
+        mMyLocationOverlay.runOnFirstFix(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                mMapView.getController().animateTo(mMyLocationOverlay.getMyLocation());
+            }
+        });
+
+        // Add wifi overlays
         mMapView.getOverlays().add(new OpenWiFiOverlay(this));
         mMapView.getOverlays().add(new WepWiFiOverlay(this));
         mMapView.getOverlays().add(new ClosedWiFiOverlay(this));
-        // The my-location gmaps overlay
-        mMapView.getOverlays().add(new MyLocationOverlay(this, mMapView));
-        
+
         IntentFilter filter = new IntentFilter();
         filter.addAction(ScanService.BROADCAST_ACTION_STARTED);
         filter.addAction(ScanService.BROADCAST_ACTION_STOPPED);
         registerReceiver(mServiceReceiver, filter);
-        
+
         mServiceRunning = ScanService.isRunning(this);
         updateServiceButton();
-        
+
         Log.i(TAG, "Created activity: MapViewer");
     }
 
@@ -106,7 +119,23 @@ public class MapViewer extends MapActivity
         super.onDestroy();
         unregisterReceiver(mServiceReceiver);
     }
-    
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        mMyLocationOverlay.enableMyLocation();
+        mMyLocationOverlay.enableCompass();
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        mMyLocationOverlay.disableMyLocation();
+        mMyLocationOverlay.disableCompass();
+    }
+
     /**
      * Service may be controlled also by other future parts, so rely on the
      * broadcast receiving to know when it's started and stopped.
@@ -119,25 +148,25 @@ public class MapViewer extends MapActivity
             if (ScanService.BROADCAST_ACTION_STARTED.equals(intent.getAction()))
             {
                 if (C.DEBUG) Log.d(TAG, "Noticed service as started");
-                
+
                 mServiceRunning = true;
                 updateServiceButton();
             }
             else if (ScanService.BROADCAST_ACTION_STOPPED.equals(intent.getAction()))
             {
                 if (C.DEBUG) Log.d(TAG, "Noticed service as stopped");
-                
+
                 mServiceRunning = false;
                 updateServiceButton();
             }
         }
     };
-    
+
     @Override
     protected void onStop()
     {
         super.onStop();
-        
+
         // Save the position of the map center for the next program opening
         // Also save the zoom used
         GeoPoint point = mMapView.getProjection().fromPixels(mMapView.getWidth() / 2, mMapView.getHeight() / 2);
@@ -148,7 +177,7 @@ public class MapViewer extends MapActivity
         editor.putInt(SETTING_LAST_ZOOM, mMapView.getZoomLevel());
         editor.commit();
     }
-    
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -173,14 +202,14 @@ public class MapViewer extends MapActivity
         }
         return true;
     }
-    
+
     @Override
     protected boolean isRouteDisplayed()
     {
         // No route gets displayed in wardrive, only WiFi points.
         return false;
     }
-    
+
     /**
      * Update the menu button depending on the service status.
      */
@@ -188,7 +217,7 @@ public class MapViewer extends MapActivity
     {
         if (mMenu == null)
             return;
-        
+
         MenuItem item = mMenu.findItem(R.id_mapviewer_menu.scanning);
         if (mServiceRunning)
         {
@@ -201,18 +230,18 @@ public class MapViewer extends MapActivity
             item.setTitle(R.string.mapviewer_menu_start_scanning);
         }
     }
-    
+
     private void onScanningMenuItemClick()
     {
         if (C.DEBUG) Log.d(TAG, "Toggling service scanning");
-        
+
         Intent i = new Intent(this, ScanService.class);
         if (mServiceRunning)
             stopService(i);
         else
             startService(i);
     }
-    
+
     /**
      * Launch the import of WiFis.
      */
@@ -253,6 +282,6 @@ public class MapViewer extends MapActivity
             })
             .create().show();
     }
-    
-    
+
+
 }

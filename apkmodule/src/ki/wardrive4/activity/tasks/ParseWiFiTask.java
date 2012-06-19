@@ -22,6 +22,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import java.util.ArrayList;
 import java.util.List;
 import ki.wardrive4.data.ScannedWiFi;
 import ki.wardrive4.data.WiFiSecurity;
@@ -115,7 +116,7 @@ public class ParseWiFiTask extends AsyncTask<List<ScannedWiFi>, Integer, Boolean
 
         // Try now to keep only the 3 best needed for triangulation.
         // Select the best three measurements we've got. (higher level)
-        String bestIds = null;
+        List<Long> idsToDelete= new ArrayList<Long>();
         Cursor c = mContext.getContentResolver().query(WiFiContract.WiFiSpot.CONTENT_URI,
             new String[]{WiFiContract.WiFiSpot._ID},
             WiFiContract.WiFiSpot.COLUMN_NAME_FK_WIFI + " = ?",
@@ -123,10 +124,11 @@ public class ParseWiFiTask extends AsyncTask<List<ScannedWiFi>, Integer, Boolean
             WiFiContract.WiFiSpot.COLUMN_NAME_LEVEL + " desc");
         try
         {
-            for (int i = 0; i < 3 && c.moveToNext(); i++)
-                bestIds = bestIds == null
-                    ? String.valueOf(c.getInt(c.getColumnIndex(WiFiContract.WiFiSpot._ID)))
-                    : ","+c.getInt(c.getColumnIndex(WiFiContract.WiFiSpot._ID));
+            // Roll the cursor three times or less if less records.
+            for (int i = 0; i < 3 && c.moveToNext(); i++);
+            // List the remaining ids into the array
+            while (c.moveToNext())
+                idsToDelete.add(c.getLong(c.getColumnIndex(WiFiContract.WiFiSpot._ID)));
         }
         finally
         {
@@ -134,9 +136,8 @@ public class ParseWiFiTask extends AsyncTask<List<ScannedWiFi>, Integer, Boolean
         }
 
         // Delete anything that is outside of the best three of this wifi.
-        mContext.getContentResolver().delete(WiFiContract.WiFiSpot.CONTENT_URI,
-            WiFiContract.WiFiSpot.COLUMN_NAME_FK_WIFI + " = ? and " + WiFiContract.WiFiSpot._ID + " not in (?)",
-            new String[]{id, bestIds});
+        for (Long spotid: idsToDelete)
+            mContext.getContentResolver().delete(WiFiContract.WiFiSpot.uriById(spotid), null, null);
     }
 
     private void calculateWiFiPosition(String id)
@@ -216,7 +217,7 @@ public class ParseWiFiTask extends AsyncTask<List<ScannedWiFi>, Integer, Boolean
             {
                 if (c.moveToNext())
                 {
-                    int ct = 1;
+                    int ct = 0;
                     double lat = c.getDouble(ct++);
                     double lon = c.getDouble(ct++);
                     double alt = c.getDouble(ct++);
