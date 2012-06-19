@@ -236,7 +236,7 @@ public class MapViewer extends MapActivity
         mWepWiFiOverlay.setShowLabels(showlabels);
         mClosedWiFiOverlay.setShowLabels(showlabels);
         
-        mMapView.setSatellite(mPreferences.getBoolean(PREF_MAPSHOWSAT, true));
+        mMapView.setSatellite(mPreferences.getBoolean(PREF_MAPSHOWSAT, false));
     }
     
     /**
