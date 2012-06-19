@@ -35,8 +35,6 @@ import android.os.IBinder;
 import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import ki.wardrive4.C;
 import ki.wardrive4.data.ScannedWiFi;
 
@@ -191,6 +189,7 @@ public class ScanService extends Service
         public void onReceive(Context context, Intent intent)
         {
             double lat, lon, alt;
+            float gpserror;
             synchronized (CURRENT_LOCATION_LOCK)
             {
                 if (mCurrentLocation == null)
@@ -199,6 +198,7 @@ public class ScanService extends Service
                 lat = mCurrentLocation.getLatitude();
                 lon = mCurrentLocation.getLongitude();
                 alt = mCurrentLocation.getAltitude();
+                gpserror = mCurrentLocation.getAccuracy();
             }
             
             ArrayList<ScannedWiFi> scannedWiFis = new ArrayList<ScannedWiFi>();
@@ -216,7 +216,8 @@ public class ScanService extends Service
                     lat,
                     lon,
                     alt, 
-                    System.currentTimeMillis()));
+                    System.currentTimeMillis(),
+                    gpserror));
             
             // Push it through the intent service to insert them.
             Intent i = new Intent(context, WiFiParseService.class);

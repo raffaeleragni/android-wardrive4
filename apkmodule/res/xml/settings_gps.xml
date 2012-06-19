@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:title="@string/settings_gpserror_title"
+        android:summary="@string/settings_gpserror_summary"
+        android:key="gpserror"
+        android:defaultValue="@string/settings_gpserror_defaultvalue"
+    />
+    <EditTextPreference
+        android:title="@string/setting_minlevel_title"
+        android:summary="@string/setting_minlevel_summary"
+        android:key="minlevel"
+        android:defaultValue="@string/settings_minlevel_defaultvalue" 
+    />
+</PreferenceScreen>

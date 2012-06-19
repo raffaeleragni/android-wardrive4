@@ -112,7 +112,7 @@ public class ClosedWiFiOverlay extends WiFiOverlay
                 double lon = cur.getDouble(cur.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_LON));
                 GeoPoint gp = new GeoPoint((int) (lat * 1E6), (int) (lon * 1E6));
                 
-                drawSingleWiFi(c, mapView, gp, ssid, level, true, STROKE, FILL, TEXT);
+                drawSingleWiFi(c, mapView, gp, ssid, level, STROKE, FILL, TEXT);
                 
                 ct++;
                 if (ct > MAX_DRAW)

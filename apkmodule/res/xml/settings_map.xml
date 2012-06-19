@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:title="@string/settings_mapfollowme_title"
+        android:key="mapfollowme"
+        android:defaultValue="false"
+    />
+    <CheckBoxPreference
+        android:title="@string/settings_mapshowsat_title"
+        android:key="mapshowsat"
+        android:defaultValue="false"
+    />
+    <CheckBoxPreference
+        android:title="@string/settings_mapshowlabels_title"
+        android:key="mapshowlabels"
+        android:defaultValue="true"
+    />
+    <CheckBoxPreference
+        android:title="@string/settings_mapshowopen_title"
+        android:key="mapshowopen"
+        android:defaultValue="true"
+    />
+    <CheckBoxPreference
+        android:title="@string/settings_mapshowclosed_title"
+        android:key="mapshowclosed"
+        android:defaultValue="true"
+    />
+    <CheckBoxPreference
+        android:title="@string/settings_mapshowwep_title"
+        android:key="mapshowwep"
+        android:defaultValue="true"
+    />
+</PreferenceScreen>

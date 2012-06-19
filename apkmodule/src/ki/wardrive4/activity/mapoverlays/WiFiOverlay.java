@@ -37,7 +37,19 @@ public abstract class WiFiOverlay extends Overlay
 {
     private static final int CIRCLE_RADIUS = 20;
     
-    protected void drawSingleWiFi(Canvas canvas, MapView mapView, GeoPoint geoPoint, String title, int level, boolean showLabels, Paint stroke, Paint fill, Paint text)
+    private boolean mShowLabels;
+
+    public boolean isShowLabels()
+    {
+        return mShowLabels;
+    }
+
+    public void setShowLabels(boolean mShowLabels)
+    {
+        this.mShowLabels = mShowLabels;
+    }
+    
+    protected void drawSingleWiFi(Canvas canvas, MapView mapView, GeoPoint geoPoint, String title, int level, Paint stroke, Paint fill, Paint text)
     {
         Point point = mapView.getProjection().toPixels(geoPoint, new Point());
         // The bigness of the circle. Decrement the circle radius so that a weak
@@ -52,7 +64,7 @@ public abstract class WiFiOverlay extends Overlay
         canvas.drawCircle(point.x, point.y, CIRCLE_RADIUS, stroke);
         canvas.drawCircle(point.x, point.y, bigness, fill);
 
-        if (showLabels && title != null && title.length() > 0)
+        if (mShowLabels && title != null && title.length() > 0)
         {
             RectF rect = new RectF(0, 0, getTextWidth(title, text) + 8, textSize + 4);
             rect.offset(point.x + CIRCLE_RADIUS - CIRCLE_RADIUS/4, point.y + CIRCLE_RADIUS - CIRCLE_RADIUS/4);

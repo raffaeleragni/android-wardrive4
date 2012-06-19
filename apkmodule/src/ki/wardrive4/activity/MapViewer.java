@@ -21,8 +21,12 @@ package ki.wardrive4.activity;
 import android.app.AlertDialog;
 import android.content.*;
 import android.content.pm.ActivityInfo;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,6 +43,7 @@ import ki.wardrive4.activity.mapoverlays.OpenWiFiOverlay;
 import ki.wardrive4.activity.mapoverlays.WepWiFiOverlay;
 import ki.wardrive4.activity.tasks.ImportOldTask;
 import ki.wardrive4.service.ScanService;
+import static ki.wardrive4.activity.Settings.*;
 
 /**
  * The main map viewer screen, a map showing WiFis currently in database.
@@ -50,6 +55,8 @@ import ki.wardrive4.service.ScanService;
 public class MapViewer extends MapActivity
 {
     private static final String TAG = C.PACKAGE+"/"+MapActivity.class.getSimpleName();
+    
+    private static final int REQ_SETTINGS = 1;
 
     private static final String SETTING_LAST_LAT = "last_lat";
     private static final String SETTING_LAST_LON = "last_lon";
@@ -59,6 +66,11 @@ public class MapViewer extends MapActivity
     private Menu mMenu = null;
     private boolean mServiceRunning = false;
     private MyLocationOverlay mMyLocationOverlay;
+    private OpenWiFiOverlay mOpenWiFiOverlay;
+    private WepWiFiOverlay mWepWiFiOverlay;
+    private ClosedWiFiOverlay mClosedWiFiOverlay;
+    
+    private SharedPreferences mPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -68,6 +80,8 @@ public class MapViewer extends MapActivity
 
         setContentView(R.layout.mapviewer);
 
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        
         mMapView = (MapView) findViewById(R.id_mapviewer.mapview);
         // Customizations like this were not possible from the XML
         mMapView.setBuiltInZoomControls(true);
@@ -98,10 +112,10 @@ public class MapViewer extends MapActivity
         });
 
         // Add wifi overlays
-        mMapView.getOverlays().add(new OpenWiFiOverlay(this));
-        mMapView.getOverlays().add(new WepWiFiOverlay(this));
-        mMapView.getOverlays().add(new ClosedWiFiOverlay(this));
-
+        mOpenWiFiOverlay = new OpenWiFiOverlay(this);
+        mWepWiFiOverlay = new WepWiFiOverlay(this);
+        mClosedWiFiOverlay = new ClosedWiFiOverlay(this);
+        
         IntentFilter filter = new IntentFilter();
         filter.addAction(ScanService.BROADCAST_ACTION_STARTED);
         filter.addAction(ScanService.BROADCAST_ACTION_STOPPED);
@@ -110,6 +124,8 @@ public class MapViewer extends MapActivity
         mServiceRunning = ScanService.isRunning(this);
         updateServiceButton();
 
+        onReloadSettings();
+        
         Log.i(TAG, "Created activity: MapViewer");
     }
 
@@ -126,6 +142,11 @@ public class MapViewer extends MapActivity
         super.onResume();
         mMyLocationOverlay.enableMyLocation();
         mMyLocationOverlay.enableCompass();
+        if (mPreferences.getBoolean(PREF_MAPFOLLOWME, false))
+        {
+            LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 1, mPositionListener);
+        }
     }
 
     @Override
@@ -134,8 +155,89 @@ public class MapViewer extends MapActivity
         super.onPause();
         mMyLocationOverlay.disableMyLocation();
         mMyLocationOverlay.disableCompass();
+        LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+        lm.removeUpdates(mPositionListener);
     }
 
+    /**
+     * Listener to center the map while ongoing, if the setting was enabled.
+     */
+    private LocationListener mPositionListener = new LocationListener()
+    {
+        @Override
+        public void onLocationChanged(Location lctn)
+        {
+            mMapView.getController().animateTo(mMyLocationOverlay.getMyLocation());
+        }
+
+        @Override
+        public void onStatusChanged(String string, int i, Bundle bundle)
+        {
+        }
+
+        @Override
+        public void onProviderEnabled(String string)
+        {
+        }
+
+        @Override
+        public void onProviderDisabled(String string)
+        {
+        }
+    };
+    
+    /**
+     * Called when returning from a settings activity.
+     */
+    private void onReloadSettings()
+    {
+        if (mPreferences.getBoolean(PREF_MAPSHOWOPEN, true))
+        {
+            if (!mMapView.getOverlays().contains(mOpenWiFiOverlay))
+                mMapView.getOverlays().add(mOpenWiFiOverlay);
+        }
+        else
+        {
+            if (mMapView.getOverlays().contains(mOpenWiFiOverlay))
+                mMapView.getOverlays().remove(mOpenWiFiOverlay);
+        }
+        
+        if (mPreferences.getBoolean(PREF_MAPSHOWWEP, true))
+        {
+            if (!mMapView.getOverlays().contains(mWepWiFiOverlay))
+                mMapView.getOverlays().add(mWepWiFiOverlay);
+        }
+        else
+        {
+            if (mMapView.getOverlays().contains(mWepWiFiOverlay))
+                mMapView.getOverlays().remove(mWepWiFiOverlay);
+        }
+        
+        if (mPreferences.getBoolean(PREF_MAPSHOWCLOSED, true))
+        {
+            if (!mMapView.getOverlays().contains(mClosedWiFiOverlay))
+                mMapView.getOverlays().add(mClosedWiFiOverlay);
+        }
+        else
+        {
+            if (mMapView.getOverlays().contains(mClosedWiFiOverlay))
+                mMapView.getOverlays().remove(mClosedWiFiOverlay);
+        }
+        
+        LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+        if (mPreferences.getBoolean(PREF_MAPFOLLOWME, false))
+            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 1, mPositionListener);
+        else
+            lm.removeUpdates(mPositionListener);
+        
+        boolean showlabels = mPreferences.getBoolean(PREF_MAPSHOWLABELS, true);
+        mOpenWiFiOverlay.setShowLabels(showlabels);
+        mWepWiFiOverlay.setShowLabels(showlabels);
+        mClosedWiFiOverlay.setShowLabels(showlabels);
+        
+        mMapView.setSatellite(mPreferences.getBoolean(PREF_MAPSHOWSAT, true));
+    }
+    
     /**
      * Service may be controlled also by other future parts, so rely on the
      * broadcast receiving to know when it's started and stopped.
@@ -179,6 +281,17 @@ public class MapViewer extends MapActivity
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        switch (requestCode)
+        {
+            case REQ_SETTINGS:
+                onReloadSettings();
+                break;
+        }
+    }
+    
+    @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
         MenuInflater mi = getMenuInflater();
@@ -198,6 +311,9 @@ public class MapViewer extends MapActivity
                 break;
             case R.id_mapviewer_menu.scanning:
                 onScanningMenuItemClick();
+                break;
+            case R.id_mapviewer_menu.settings:
+                onSettingsMenuItemClick();
                 break;
         }
         return true;
@@ -231,6 +347,12 @@ public class MapViewer extends MapActivity
         }
     }
 
+    private void onSettingsMenuItemClick()
+    {
+        Intent i = new Intent(this, Settings.class);
+        startActivityForResult(i, REQ_SETTINGS);
+    }
+    
     private void onScanningMenuItemClick()
     {
         if (C.DEBUG) Log.d(TAG, "Toggling service scanning");

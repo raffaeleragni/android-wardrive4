@@ -31,6 +31,8 @@
 
         <activity android:name=".activity.MapViewer"/>
         
+        <activity android:name=".activity.Settings"/>
+        
         <activity android:name=".authenticator.AuthenticatorActivity" android:theme="@android:style/Theme.Dialog"/>
 
         <service android:name=".service.ScanService"/>

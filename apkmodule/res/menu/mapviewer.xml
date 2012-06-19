@@ -11,4 +11,8 @@
 		android:title="@string/mapviewer_menu_import"
         android:icon="@drawable/ic_import"
         />
+	<item
+		android:id="@+id_mapviewer_menu/settings"
+		android:title="@string/mapviewer_menu_settings"
+        />
 </menu>

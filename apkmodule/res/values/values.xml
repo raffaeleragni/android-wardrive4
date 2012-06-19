@@ -6,4 +6,9 @@
     <string name="google_maps_api_key_dbg">0oIw2nwqauIUVxS2RXShNyf-AV92LFSUep6hGsw</string>
     <string name="wardrive4_weburl_register">http://www.wardrive.org/wardrive4/register.html</string>
     <string name="wardrive4_weburl_ajaxlogin">http://www.wardrive.org/wardrive4/ajaxlogin</string>
+
+    <!-- Some other application default data -->
+    <string name="settings_gpserror_defaultvalue">50</string>
+    <string name="settings_minlevel_defaultvalue">-99</string>
+    
 </resources>

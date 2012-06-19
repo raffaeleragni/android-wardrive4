@@ -5,6 +5,7 @@
     <string name="mapviewer_menu_import">Import</string>
     <string name="mapviewer_menu_start_scanning">Start scanning</string>
     <string name="mapviewer_menu_scanning">Scanning...</string>
+    <string name="mapviewer_menu_settings">Settings</string>
     
     <string name="mapviewer_dlg_import_title">Choose import source</string>
     <string name="mapviewer_dlg_import_oldwardrive">Old wardrive database</string>
@@ -12,6 +13,22 @@
     <string name="mapviewer_dlg_importold_nofilefound_title">Choose import source</string>
     <string name="mapviewer_dlg_importoldprogress_title">Importing</string>
     <string name="mapviewer_dlg_importoldprogress_message">Importing networks...</string>
+    
+    <!-- Strings on settings -->
+    
+    <string name="settings_header_scanning">WiFi scanning</string>
+    <string name="settings_gpserror_title">GPS Error</string>
+    <string name="settings_gpserror_summary">Acceptable error of GPS calculation in meters. When error is bigger, WiFi are not scanned. Default is 50.</string>
+    <string name="setting_minlevel_title">WiFi strength</string>
+    <string name="setting_minlevel_summary">The minimum WiFi strength accepted for scanning. Value is expressed in dBm. Default is -99.</string>
+    
+    <string name="settings_header_map">Map options</string>
+    <string name="settings_mapfollowme_title">Follow my position</string>
+    <string name="settings_mapshowsat_title">Show satellite map</string>
+    <string name="settings_mapshowlabels_title">Show WiFi labels</string>
+    <string name="settings_mapshowopen_title">Show open WiFis</string>
+    <string name="settings_mapshowclosed_title">Show closed WiFis</string>
+    <string name="settings_mapshowwep_title">Show WEP WiFis</string>
     
     <!-- General messages, for example common buttons -->
     <string name="OK">OK</string>

@@ -20,10 +20,14 @@ package ki.wardrive4.activity.tasks;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import java.util.ArrayList;
 import java.util.List;
+import static ki.wardrive4.activity.Settings.PREF_GPSERROR;
+import static ki.wardrive4.activity.Settings.PREF_MINLEVEL;
 import ki.wardrive4.data.ScannedWiFi;
 import ki.wardrive4.data.WiFiSecurity;
 import ki.wardrive4.provider.wifi.WiFiContract;
@@ -38,10 +42,12 @@ import ki.wardrive4.utils.SHA1Utils;
 public class ParseWiFiTask extends AsyncTask<List<ScannedWiFi>, Integer, Boolean>
 {
     private Context mContext;
-
+    private SharedPreferences mPreferences;
+    
     public ParseWiFiTask(Context mContext)
     {
         this.mContext = mContext;
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(mContext.getApplicationContext());
     }
 
     @Override
@@ -49,8 +55,15 @@ public class ParseWiFiTask extends AsyncTask<List<ScannedWiFi>, Integer, Boolean
     {
         List<ScannedWiFi> wifis = paramss[0];
 
+        int gpserror = mPreferences.getInt(PREF_GPSERROR, 50);
+        int minlevel = mPreferences.getInt(PREF_MINLEVEL, -99);
+        
         for (ScannedWiFi wifi: wifis)
         {
+            // Apply filter out rules, from the settings
+            if (wifi.level < minlevel || wifi.gpserror > gpserror)
+                continue;
+            
             // Generate SHA1 hash for _id (based on bssid).
             // Defaults to bssid if no hash can be computed.
             String id = wifi.bssid;
