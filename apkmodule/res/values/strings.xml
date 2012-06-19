@@ -3,17 +3,24 @@
     <string name="app_name">Wardrive</string>
     
     <string name="mapviewer_menu_import">Import</string>
+    <string name="mapviewer_menu_export">Export</string>
     <string name="mapviewer_menu_start_scanning">Start scanning</string>
     <string name="mapviewer_menu_scanning">Scanning...</string>
     <string name="mapviewer_menu_settings">Settings</string>
     
-    <string name="mapviewer_dlg_import_title">Choose import source</string>
-    <string name="mapviewer_dlg_import_oldwardrive">Old wardrive database</string>
+    <string name="dlg_import_title">Choose import source</string>
+    <string name="dlg_import_oldwardrive">Old wardrive database</string>
     
-    <string name="mapviewer_dlg_importold_nofilefound_title">Choose import source</string>
-    <string name="mapviewer_dlg_importoldprogress_title">Importing</string>
-    <string name="mapviewer_dlg_importoldprogress_message">Importing networks...</string>
+    <string name="dlg_export_title">Choose export type</string>
+    <string name="dlg_export_kml">to KML (Google Earth)</string>
     
+    <string name="dlg_importold_nofilefound_title">Choose import source</string>
+    <string name="dlg_importoldprogress_title">Importing</string>
+    <string name="dlg_importoldprogress_message">Importing networks...</string>
+    
+    <string name="dlg_exportkmlprogress_title">Exporting</string>
+    <string name="dlg_exportkmlprogress_message">Exporting networks to KML...</string>
+
     <!-- Strings on settings -->
     
     <string name="settings_header_scanning">WiFi scanning</string>

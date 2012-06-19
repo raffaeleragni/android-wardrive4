@@ -44,6 +44,7 @@ import ki.wardrive4.activity.mapoverlays.WepWiFiOverlay;
 import ki.wardrive4.activity.tasks.ImportOldTask;
 import ki.wardrive4.service.ScanService;
 import static ki.wardrive4.activity.Settings.*;
+import ki.wardrive4.activity.tasks.ExportKmlTask;
 
 /**
  * The main map viewer screen, a map showing WiFis currently in database.
@@ -309,6 +310,9 @@ public class MapViewer extends MapActivity
             case R.id_mapviewer_menu.importwifis:
                 onImportMenuItemClick();
                 break;
+            case R.id_mapviewer_menu.export:
+                onExportMenuItemClick();
+                break;
             case R.id_mapviewer_menu.scanning:
                 onScanningMenuItemClick();
                 break;
@@ -369,9 +373,9 @@ public class MapViewer extends MapActivity
      */
     private void onImportMenuItemClick()
     {
-        final CharSequence[] items = {getText(R.string.mapviewer_dlg_import_oldwardrive)};
+        final CharSequence[] items = {getText(R.string.dlg_import_oldwardrive)};
         new AlertDialog.Builder(this)
-            .setTitle(R.string.mapviewer_dlg_import_title)
+            .setTitle(R.string.dlg_import_title)
             .setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener()
             {
                 @Override
@@ -387,7 +391,7 @@ public class MapViewer extends MapActivity
                             else
                                 // Alert error for not finding a correct file
                                 new AlertDialog.Builder(MapViewer.this)
-                                    .setTitle(R.string.mapviewer_dlg_importold_nofilefound_title)
+                                    .setTitle(R.string.dlg_importold_nofilefound_title)
                                     .setNegativeButton(R.string.OK, new DialogInterface.OnClickListener()
                                     {
                                         @Override
@@ -397,6 +401,32 @@ public class MapViewer extends MapActivity
                                         }
                                     })
                                     .create().show();
+                            break;
+                    }
+                    dialog.dismiss();
+                }
+            })
+            .create().show();
+    }
+
+    /**
+     * Launch the export of WiFis.
+     */
+    private void onExportMenuItemClick()
+    {
+        final CharSequence[] items = {getText(R.string.dlg_export_kml)};
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.dlg_export_title)
+            .setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialog, int item)
+                {
+                    switch (item)
+                    {
+                        case 0:
+                            File outFile = new File(Environment.getExternalStorageDirectory(), "wardrive.kml");
+                            new ExportKmlTask(MapViewer.this).execute(outFile);
                             break;
                     }
                     dialog.dismiss();

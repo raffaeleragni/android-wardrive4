@@ -27,6 +27,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
 import java.io.File;
+import java.text.DateFormat;
 import ki.wardrive4.C;
 import ki.wardrive4.R;
 import ki.wardrive4.data.WiFiSecurity;
@@ -159,8 +160,8 @@ public class ImportOldTask extends AsyncTask<File, Integer, Void>
         if (progressDialog == null)
         {
             progressDialog = new ProgressDialog(mContext);
-            progressDialog.setTitle(R.string.mapviewer_dlg_importoldprogress_title);
-            progressDialog.setMessage(mContext.getText(R.string.mapviewer_dlg_importoldprogress_message));
+            progressDialog.setTitle(R.string.dlg_importoldprogress_title);
+            progressDialog.setMessage(mContext.getText(R.string.dlg_importoldprogress_message));
             progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             // If canceled the user would not have any other way to see the progress, instead map the canceling to cancel the task
             progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener()
