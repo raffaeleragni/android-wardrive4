@@ -37,12 +37,13 @@ public class ScannedWiFi implements Parcelable
     public double lon;
     public double alt;
     public long timestamp;
+    public float gpserror;
 
     public ScannedWiFi()
     {
     }
 
-    public ScannedWiFi(String bssid, String ssid, String capabilities, int level, int frequency, double lat, double lon, double alt, long timestamp)
+    public ScannedWiFi(String bssid, String ssid, String capabilities, int level, int frequency, double lat, double lon, double alt, long timestamp, float gpserror)
     {
         this.bssid = bssid;
         this.ssid = ssid;
@@ -53,6 +54,7 @@ public class ScannedWiFi implements Parcelable
         this.lon = lon;
         this.alt = alt;
         this.timestamp = timestamp;
+        this.gpserror = gpserror;
     }
 
     public static final Parcelable.Creator<ScannedWiFi> CREATOR = new Parcelable.Creator<ScannedWiFi>()
@@ -81,6 +83,7 @@ public class ScannedWiFi implements Parcelable
         lon = in.readDouble();
         alt = in.readDouble();
         timestamp = in.readLong();
+        gpserror = in.readFloat();
     }
 
     @Override
@@ -101,11 +104,12 @@ public class ScannedWiFi implements Parcelable
         parcel.writeDouble(lon);
         parcel.writeDouble(alt);
         parcel.writeLong(timestamp);
+        parcel.writeFloat(gpserror);
     }
 
     @Override
     public String toString()
     {
-        return "ScannedWiFi{" + "bssid=" + bssid + ", ssid=" + ssid + ", capabilities=" + capabilities + ", level=" + level + ", frequency=" + frequency + ", lat=" + lat + ", lon=" + lon + ", alt=" + alt + ", timestamp=" + timestamp + '}';
+        return "ScannedWiFi{" + "bssid=" + bssid + ", ssid=" + ssid + ", capabilities=" + capabilities + ", level=" + level + ", frequency=" + frequency + ", lat=" + lat + ", lon=" + lon + ", alt=" + alt + ", timestamp=" + timestamp + ", gpserror=" + gpserror + '}';
     }
 }
