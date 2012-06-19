@@ -14,7 +14,7 @@
     <string name="dlg_export_title">Choose export type</string>
     <string name="dlg_export_kml">to KML (Google Earth)</string>
     
-    <string name="dlg_importold_nofilefound_title">Choose import source</string>
+    <string name="dlg_importold_nofilefound_title">No file found to import</string>
     <string name="dlg_importoldprogress_title">Importing</string>
     <string name="dlg_importoldprogress_message">Importing networks...</string>
     
