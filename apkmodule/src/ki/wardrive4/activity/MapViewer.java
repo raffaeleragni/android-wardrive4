@@ -353,7 +353,7 @@ public class MapViewer extends MapActivity
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putBoolean(PREF_MAPSHOWSAT, !mPreferences.getBoolean(PREF_MAPSHOWSAT, false));
         editor.commit();
-        onReloadSettings();
+        mMapView.setSatellite(mPreferences.getBoolean(PREF_MAPSHOWSAT, false));
     }
     
     private void onSettingsMenuItemClick()
