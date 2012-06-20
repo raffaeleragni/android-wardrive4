@@ -3,20 +3,26 @@
     <item
 		android:id="@+id_mapviewer_menu/scanning"
 		android:title="@string/mapviewer_menu_start_scanning"
-        android:icon="@drawable/ic_scanning_off"
-        android:showAsAction="always|withText"
+        android:showAsAction="ifRoom|withText"
         />
 	<item
-		android:id="@+id_mapviewer_menu/importwifis"
-		android:title="@string/mapviewer_menu_import"
-        android:icon="@drawable/ic_import"
-        />
-	<item
-		android:id="@+id_mapviewer_menu/export"
-		android:title="@string/mapviewer_menu_export"
+		android:id="@+id_mapviewer_menu/mapmode"
+        android:title="@string/mapviewer_menu_mapmode"
+        android:icon="@android:drawable/ic_menu_mapmode"
+        android:showAsAction="ifRoom|withText"
         />
 	<item
 		android:id="@+id_mapviewer_menu/settings"
 		android:title="@string/mapviewer_menu_settings"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:showAsAction="ifRoom|withText"
+        />
+	<item
+		android:id="@+id_mapviewer_menu/importwifis"
+		android:title="@string/mapviewer_menu_import"
+        />
+	<item
+		android:id="@+id_mapviewer_menu/export"
+		android:title="@string/mapviewer_menu_export"
         />
 </menu>

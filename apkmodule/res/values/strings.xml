@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">Wardrive</string>
     
+    <string name="mapviewer_menu_mapmode">Map mode</string>
     <string name="mapviewer_menu_import">Import</string>
     <string name="mapviewer_menu_export">Export</string>
     <string name="mapviewer_menu_start_scanning">Start scanning</string>

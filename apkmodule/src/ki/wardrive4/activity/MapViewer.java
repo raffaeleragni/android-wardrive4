@@ -307,6 +307,9 @@ public class MapViewer extends MapActivity
     {
         switch (item.getItemId())
         {
+            case R.id_mapviewer_menu.mapmode:
+                onMapmodeMenuItemClick();
+                break;
             case R.id_mapviewer_menu.importwifis:
                 onImportMenuItemClick();
                 break;
@@ -340,17 +343,19 @@ public class MapViewer extends MapActivity
 
         MenuItem item = mMenu.findItem(R.id_mapviewer_menu.scanning);
         if (mServiceRunning)
-        {
-            item.setIcon(getResources().getDrawable(R.drawable.ic_scanning_on));
             item.setTitle(R.string.mapviewer_menu_scanning);
-        }
         else
-        {
-            item.setIcon(getResources().getDrawable(R.drawable.ic_scanning_off));
             item.setTitle(R.string.mapviewer_menu_start_scanning);
-        }
     }
 
+    private void onMapmodeMenuItemClick()
+    {
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putBoolean(PREF_MAPSHOWSAT, !mPreferences.getBoolean(PREF_MAPSHOWSAT, false));
+        editor.commit();
+        onReloadSettings();
+    }
+    
     private void onSettingsMenuItemClick()
     {
         Intent i = new Intent(this, Settings.class);
