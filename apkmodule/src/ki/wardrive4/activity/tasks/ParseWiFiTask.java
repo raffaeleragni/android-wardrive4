@@ -43,7 +43,7 @@ public class ParseWiFiTask extends AsyncTask<List<ScannedWiFi>, Integer, Boolean
 {
     private Context mContext;
     private SharedPreferences mPreferences;
-    
+
     public ParseWiFiTask(Context mContext)
     {
         this.mContext = mContext;
@@ -55,15 +55,15 @@ public class ParseWiFiTask extends AsyncTask<List<ScannedWiFi>, Integer, Boolean
     {
         List<ScannedWiFi> wifis = paramss[0];
 
-        int gpserror = mPreferences.getInt(PREF_GPSERROR, 50);
-        int minlevel = mPreferences.getInt(PREF_MINLEVEL, -99);
-        
+        int gpserror = Integer.valueOf(mPreferences.getString(PREF_GPSERROR, "50"));
+        int minlevel = Integer.valueOf(mPreferences.getString(PREF_MINLEVEL, "-99"));
+
         for (ScannedWiFi wifi: wifis)
         {
             // Apply filter out rules, from the settings
             if (wifi.level < minlevel || wifi.gpserror > gpserror)
                 continue;
-            
+
             // Generate SHA1 hash for _id (based on bssid).
             // Defaults to bssid if no hash can be computed.
             String id = wifi.bssid;
