@@ -18,9 +18,8 @@
  */
 package ki.wardrive4.service;
 
-import android.app.ActivityManager;
+import android.app.*;
 import android.app.ActivityManager.RunningServiceInfo;
-import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -36,6 +35,9 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 import ki.wardrive4.C;
+import ki.wardrive4.R;
+import ki.wardrive4.activity.Launcher;
+import ki.wardrive4.activity.MapViewer;
 import ki.wardrive4.data.ScannedWiFi;
 
 /**
@@ -46,10 +48,12 @@ import ki.wardrive4.data.ScannedWiFi;
 public class ScanService extends Service
 {
     private static final String TAG = C.PACKAGE+"/"+ScanService.class.getSimpleName();
-    
+
+    private static final int NOTIFICATION_ID = 1;
+
     public static final String BROADCAST_ACTION_STARTED = C.PACKAGE+".ScanService.STARTED";
     public static final String BROADCAST_ACTION_STOPPED = C.PACKAGE+".ScanService.STOPPED";
-    
+
 //    Do not expose a binder for now
 //    private ScanServiceBinder mScanServiceBinder = new ScanServiceBinder();
 //    public class ScanServiceBinder extends Binder
@@ -74,7 +78,7 @@ public class ScanService extends Service
     {
         super.onCreate();
         start();
-        
+
         Log.i(TAG, "Service started");
     }
 
@@ -83,16 +87,16 @@ public class ScanService extends Service
     {
         super.onDestroy();
         stop();
-        
+
         Log.i(TAG, "Service stopped");
     }
-    
+
     /**
      * Static way to know if this service is running.
-     * 
+     *
      * This is a 'running' as intended in Android: service being instantiated.
      * Useful when the service is not controlled by the binder.
-     * 
+     *
      * @return true for running
      */
     public static boolean isRunning(Context ctx)
@@ -103,51 +107,67 @@ public class ScanService extends Service
                 return true;
         return false;
     }
-    
+
     // -------------------------------------------------------------------------
-    
+
     // Lock used to prevent overwriting of the mCurrentLocation pointer while
     // the parsing of the wifis is reading it's properties.
     private final Object CURRENT_LOCATION_LOCK = new Object();
-    
+
     // Current location to be read when wifi scan is ready to parse data.
     private volatile Location mCurrentLocation = null;
-    
+
     private void start()
     {
         // Reset the location
         mCurrentLocation = null;
-        
+
         // Register the broadcast receiver for the wifi scanning.
         IntentFilter wifiIntent = new IntentFilter();
         wifiIntent.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
         registerReceiver(mWiFiScanBroadcastReceiver, wifiIntent);
-        
+
         // Notified each 10 meters
         LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 10, mLocationListener);
-        
+
+        // Registers itself in the nofitication area
+        Intent notificationIntent = new Intent(this, MapViewer.class);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification notitication = new Notification.Builder(this)
+            .setSmallIcon(R.drawable.logo)
+            .setContentTitle(getText(R.string.app_name))
+            .setOngoing(true)
+            .setAutoCancel(false)
+            .setContentIntent(PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT))
+            .getNotification();
+        notificationManager.notify(NOTIFICATION_ID, notitication);
+
         // Sends a broadcast, so that if some third party wants to know.
         // This also allows to other parts of this application to start/stop the
         // service and let every part know of it.
         sendBroadcast(new Intent(BROADCAST_ACTION_STARTED));
     }
-    
+
     private void stop()
     {
         // Stops location notifications
         LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
         lm.removeUpdates(mLocationListener);
-        
+
         // Stops wifi scanning receiver
         unregisterReceiver(mWiFiScanBroadcastReceiver);
-        
+
+        // Cancels the notification
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(NOTIFICATION_ID);
+
         // Sends a broadcast, so that if some third party wants to know.
         // This also allows to other parts of this application to start/stop the
         // service and let every part know of it.
         sendBroadcast(new Intent(BROADCAST_ACTION_STOPPED));
     }
-    
+
     private LocationListener mLocationListener = new LocationListener()
     {
         @Override
@@ -155,7 +175,7 @@ public class ScanService extends Service
         {
             if (location == null)
                 return;
-            
+
             WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
             synchronized (CURRENT_LOCATION_LOCK)
             {
@@ -182,7 +202,7 @@ public class ScanService extends Service
             // TODO: notify user/use a status icon?
         }
     };
-    
+
     private BroadcastReceiver mWiFiScanBroadcastReceiver = new BroadcastReceiver()
     {
         @Override
@@ -200,9 +220,9 @@ public class ScanService extends Service
                 alt = mCurrentLocation.getAltitude();
                 gpserror = mCurrentLocation.getAccuracy();
             }
-            
+
             ArrayList<ScannedWiFi> scannedWiFis = new ArrayList<ScannedWiFi>();
-            
+
             // For each wifi load a ScannedWiFi, adding the location.
             WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
             List<ScanResult> results = wm.getScanResults();
@@ -215,10 +235,10 @@ public class ScanService extends Service
                     result.frequency,
                     lat,
                     lon,
-                    alt, 
+                    alt,
                     System.currentTimeMillis(),
                     gpserror));
-            
+
             // Push it through the intent service to insert them.
             Intent i = new Intent(context, WiFiParseService.class);
             Bundle b = new Bundle();
