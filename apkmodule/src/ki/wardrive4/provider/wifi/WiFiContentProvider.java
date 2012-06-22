@@ -68,6 +68,7 @@ public class WiFiContentProvider extends ContentProvider
         sProjectionMap.put(WiFiContract.WiFi.COLUMN_NAME_ALT, WiFiContract.WiFi.COLUMN_NAME_ALT);
         sProjectionMap.put(WiFiContract.WiFi.COLUMN_NAME_GEOHASH, WiFiContract.WiFi.COLUMN_NAME_GEOHASH);
         sProjectionMap.put(WiFiContract.WiFi.COLUMN_NAME_TIMESTAMP, WiFiContract.WiFi.COLUMN_NAME_TIMESTAMP);
+        sProjectionMap.put(WiFiContract.WiFi.COLUMN_NAME_SYNC_STATUS, WiFiContract.WiFi.COLUMN_NAME_SYNC_STATUS);
 
         // Spots columns
         sProjectionMapSpots.put(WiFiContract.WiFiSpot._ID, WiFiContract.WiFiSpot._ID);
