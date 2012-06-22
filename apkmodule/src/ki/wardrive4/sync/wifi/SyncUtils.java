@@ -134,7 +134,8 @@ public class SyncUtils
             }
         }
         
-        Log.i(TAG, "Sync fetch: received " + ct + " items.");
+        if (ct > 0)
+            Log.i(TAG, "Sync fetch: received " + ct + " items.");
 
         return maxMarker;
     }
