@@ -79,6 +79,7 @@ public class SyncUtils
         is.setCharacterStream(new StringReader(xml));
         Document doc = db.parse(is);
         
+        int ct = 0;
         long maxMarker = marker;
         NodeList list = doc.getDocumentElement().getElementsByTagName("wifi");
         for (int i = 0; i < list.getLength(); i++)
@@ -90,7 +91,7 @@ public class SyncUtils
                 String id = e.getAttribute("id");
                 // Check existance...
                 Cursor c = ctx.getContentResolver().query(WiFiContract.WiFi.uriById(id),
-                    new String[]{WiFiContract.WiFi._ID},
+                    new String[]{WiFiContract.WiFi.COLUMN_NAME_TIMESTAMP},
                     null,
                     null,
                     null);
@@ -114,9 +115,14 @@ public class SyncUtils
                     {
                         cv.put(WiFiContract.WiFi._ID, id);
                         ctx.getContentResolver().insert(WiFiContract.WiFi.CONTENT_URI, cv);
+                        ct++;
                     }
-                    else
+                    // Update only if timestamp is higher - to be sure
+                    else if (c.getInt(c.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_TIMESTAMP)) < tstamp)
+                    {
                         ctx.getContentResolver().update(WiFiContract.WiFi.uriById(id), cv, null, null);
+                        ct++;
+                    }
                     
                     // marker becomes the max tstamp
                     maxMarker = maxMarker < tstamp ? tstamp : maxMarker;
@@ -127,6 +133,8 @@ public class SyncUtils
                 }
             }
         }
+        
+        Log.i(TAG, "Sync fetch: received " + ct + " items.");
 
         return maxMarker;
     }
@@ -207,6 +215,10 @@ public class SyncUtils
         {
             c.close();
         }
+
+        // Nothing to send, do not print any log.
+        if (ids.isEmpty())
+            return;
         
         String url = ctx.getResources().getText(R.string.wardrive4_weburl_ajaxsync).toString();
         HttpPost post = new HttpPost(url);
@@ -232,7 +244,7 @@ public class SyncUtils
             Log.i(TAG, "Sync push: sent " + ids.size() + " items.");
         }
         else
-            Log.e(TAG, "Sync error, status: " + status);
+            Log.e(TAG, "Sync push error, status: " + status);
     }
     
     /**
