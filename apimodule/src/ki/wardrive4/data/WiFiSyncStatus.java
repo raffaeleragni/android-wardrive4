@@ -25,7 +25,7 @@ package ki.wardrive4.data;
  * 
  * @author Raffaele Ragni <raffaele.ragni@gmail.com>
  */
-public enum SyncStatus
+public enum WiFiSyncStatus
 {
     UPDATED,
     TO_UPDATE_UPLOAD,

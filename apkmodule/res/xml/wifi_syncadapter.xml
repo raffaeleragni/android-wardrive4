@@ -3,4 +3,5 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:contentAuthority="ki.wardrive4.provider.wifi"
     android:accountType="ki.wardrive4.account"
+    android:supportsUploading="true"
     android:userVisible="true"/>

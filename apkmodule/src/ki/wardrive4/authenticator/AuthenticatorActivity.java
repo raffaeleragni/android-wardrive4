@@ -139,7 +139,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
         if (mRequestNewAccount)
         {
             mAccountManager.addAccountExplicitly(account, mPassword, null);
-            // automatic sync categories
+            // automatic sync
             ContentResolver.setSyncAutomatically(account, WiFiContract.AUTHORITY, true);
         }
         else
@@ -221,7 +221,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
         {
             try
             {
-                return AuthenticationUtils.login(mUsername, mPassword);
+                return AuthenticationUtils.login(AuthenticatorActivity.this, mUsername, mPassword);
             }
             catch (Exception ex)
             {

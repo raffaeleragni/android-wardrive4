@@ -24,6 +24,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import ki.wardrive4.C;
 
 /**
@@ -72,7 +75,16 @@ public class Authenticator extends AbstractAccountAuthenticator
         {
             // Token was saved, reauthenticate to make sure it is correct and
             // still valid.
-            final String authToken = AuthenticationUtils.login(account.name, password);
+            String authToken = null;
+            try
+            {
+                authToken = AuthenticationUtils.login(mContext, account.name, password);
+            }
+            catch (IOException ex)
+            {
+                Log.e(TAG, ex.getMessage(), ex);
+            }
+            
             if (!TextUtils.isEmpty(authToken))
             {
                 Log.i(TAG, "Token Authenticated for user " + account.name);

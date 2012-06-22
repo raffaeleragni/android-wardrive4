@@ -20,11 +20,18 @@ package ki.wardrive4.sync.wifi;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.SyncResult;
+import android.net.ParseException;
 import android.os.Bundle;
+import android.util.Log;
+import java.io.IOException;
+import ki.wardrive4.C;
+import ki.wardrive4.authenticator.AuthenticationConst;
 
 /**
  * Remotely synchronizes the WiFi resource.
@@ -33,8 +40,8 @@ import android.os.Bundle;
  */
 public class WiFiSyncAdapter extends AbstractThreadedSyncAdapter
 {
+    private static final String TAG = C.PACKAGE + "/" + WiFiSyncAdapter.class.getSimpleName();
     private final AccountManager mAccountManager;
-
     private final Context mContext;
 
     public WiFiSyncAdapter(Context context, boolean autoInitialize)
@@ -45,9 +52,32 @@ public class WiFiSyncAdapter extends AbstractThreadedSyncAdapter
     }
 
     @Override
-    public void onPerformSync(Account acnt, Bundle bundle, String string, ContentProviderClient cpc, SyncResult sr)
+    public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult sr)
     {
-        // TODO
-        throw new UnsupportedOperationException("Not supported yet.");
+        try
+        {
+            String password = mAccountManager.blockingGetAuthToken(account, AuthenticationConst.AUTHTOKEN_TYPE, true);
+            SyncUtils.push(mContext, account.name, password);
+            SyncUtils.fetch(mContext, account.name, password);
+        }
+        catch (final OperationCanceledException e)
+        {
+            Log.e(TAG, e.getMessage(), e);
+        }
+        catch (final AuthenticatorException e)
+        {
+            Log.e(TAG, e.getMessage(), e);
+            sr.stats.numAuthExceptions++;
+        }
+        catch (final IOException e)
+        {
+            Log.e(TAG, e.getMessage(), e);
+            sr.stats.numIoExceptions++;
+        }
+        catch (final ParseException e)
+        {
+            Log.e(TAG, e.getMessage(), e);
+            sr.stats.numParseExceptions++;
+        }
     }
 }
