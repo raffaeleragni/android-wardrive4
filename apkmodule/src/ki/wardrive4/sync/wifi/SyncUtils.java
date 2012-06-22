@@ -44,7 +44,7 @@ public class SyncUtils
 {
     private static final String TAG = C.PACKAGE+"/"+WiFiSyncAdapter.class.getSimpleName();
     
-    private static final int PAGE_LIMIT = 10;
+    private static final int PAGE_LIMIT = 250;
     
     /**
      * @return the max of the marker, to be kept for later user
