@@ -29,6 +29,7 @@ import java.util.List;
 import static ki.wardrive4.activity.Settings.PREF_GPSERROR;
 import static ki.wardrive4.activity.Settings.PREF_MINLEVEL;
 import ki.wardrive4.data.ScannedWiFi;
+import ki.wardrive4.data.SyncStatus;
 import ki.wardrive4.data.WiFiSecurity;
 import ki.wardrive4.provider.wifi.WiFiContract;
 import ki.wardrive4.utils.Geohash;
@@ -91,6 +92,7 @@ public class ParseWiFiTask extends AsyncTask<List<ScannedWiFi>, Integer, Boolean
         cv.put(WiFiContract.WiFi.COLUMN_NAME_CAPABILITIES, capabilities);
         cv.put(WiFiContract.WiFi.COLUMN_NAME_SECURITY, WiFiSecurity.fromCapabilities(capabilities).ordinal());
         cv.put(WiFiContract.WiFi.COLUMN_NAME_FREQUENCY, frequency);
+        cv.put(WiFiContract.WiFi.COLUMN_NAME_SYNC_STATUS, SyncStatus.TO_UPDATE_UPLOAD.ordinal());
 
         // Check if exists record
         boolean exists = false;
@@ -201,6 +203,7 @@ public class ParseWiFiTask extends AsyncTask<List<ScannedWiFi>, Integer, Boolean
                     cv.put(WiFiContract.WiFi.COLUMN_NAME_GEOHASH, c.getDouble(c.getColumnIndex(WiFiContract.WiFiSpot.COLUMN_NAME_GEOHASH)));
                     cv.put(WiFiContract.WiFi.COLUMN_NAME_LEVEL, c.getDouble(c.getColumnIndex(WiFiContract.WiFiSpot.COLUMN_NAME_LEVEL)));
                     cv.put(WiFiContract.WiFi.COLUMN_NAME_TIMESTAMP, c.getDouble(c.getColumnIndex(WiFiContract.WiFiSpot.COLUMN_NAME_TIMESTAMP)));
+                    cv.put(WiFiContract.WiFi.COLUMN_NAME_SYNC_STATUS, SyncStatus.TO_UPDATE_UPLOAD.ordinal());
                     mContext.getContentResolver().update(WiFiContract.WiFi.uriById(id), cv, null, null);
                 }
             }
