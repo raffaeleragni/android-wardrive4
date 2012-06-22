@@ -7,11 +7,16 @@ package ki.wardrive4.sync.wifi;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.util.Log;
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import ki.wardrive4.C;
 import ki.wardrive4.R;
 import ki.wardrive4.data.WiFiSyncStatus;
@@ -23,6 +28,13 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -34,10 +46,89 @@ public class SyncUtils
     
     private static final int PAGE_LIMIT = 10;
     
-    public static void fetch(Context ctx, String username, String password) throws UnsupportedEncodingException, IOException
+    /**
+     * @return the max of the marker, to be kept for later user
+     */
+    public static long fetch(Context ctx, String username, String password, long marker) throws UnsupportedEncodingException, IOException, ParserConfigurationException, SAXException
     {
         HttpClient client = new DefaultHttpClient();
         login(ctx, client, username, password);
+        
+        String url = ctx.getResources().getText(R.string.wardrive4_weburl_ajaxsync).toString();
+        HttpPost post = new HttpPost(url);
+
+        List<NameValuePair> postParams = new ArrayList<NameValuePair>();
+        postParams.add(new BasicNameValuePair("action", "fetch"));
+        postParams.add(new BasicNameValuePair("mark", String.valueOf(marker)));
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(postParams);
+        post.setEntity(entity);
+        
+        HttpResponse resp = client.execute(post);
+        int status = resp.getStatusLine().getStatusCode();
+        if (status != 200)
+        {
+            Log.e(TAG, "Sync error while fetching, status: " + status);
+            return marker;
+        }
+        
+        String xml = EntityUtils.toString(resp.getEntity());
+
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        InputSource is = new InputSource();
+        is.setCharacterStream(new StringReader(xml));
+        Document doc = db.parse(is);
+        
+        long maxMarker = marker;
+        NodeList list = doc.getDocumentElement().getElementsByTagName("wifi");
+        for (int i = 0; i < list.getLength(); i++)
+        {
+            Node node = list.item(i);
+            if (node instanceof Element)
+            {
+                Element e = (Element) node;
+                String id = e.getAttribute("id");
+                // Check existance...
+                Cursor c = ctx.getContentResolver().query(WiFiContract.WiFi.uriById(id),
+                    new String[]{WiFiContract.WiFi._ID},
+                    null,
+                    null,
+                    null);
+                try
+                {
+                    ContentValues cv = new ContentValues();
+                    long tstamp = Long.parseLong(e.getElementsByTagName("timestamp").item(0).getTextContent());
+                    cv.put(WiFiContract.WiFi.COLUMN_NAME_BSSID, e.getElementsByTagName("bssid").item(0).getTextContent());
+                    cv.put(WiFiContract.WiFi.COLUMN_NAME_SSID, e.getElementsByTagName("ssid").item(0).getTextContent());
+                    cv.put(WiFiContract.WiFi.COLUMN_NAME_CAPABILITIES, e.getElementsByTagName("capabilities").item(0).getTextContent());
+                    cv.put(WiFiContract.WiFi.COLUMN_NAME_SECURITY, Integer.parseInt(e.getElementsByTagName("security").item(0).getTextContent()));
+                    cv.put(WiFiContract.WiFi.COLUMN_NAME_LEVEL, Integer.parseInt(e.getElementsByTagName("level").item(0).getTextContent()));
+                    cv.put(WiFiContract.WiFi.COLUMN_NAME_FREQUENCY, Integer.parseInt(e.getElementsByTagName("frequency").item(0).getTextContent()));
+                    cv.put(WiFiContract.WiFi.COLUMN_NAME_LAT, Double.parseDouble(e.getElementsByTagName("lat").item(0).getTextContent()));
+                    cv.put(WiFiContract.WiFi.COLUMN_NAME_LON, Double.parseDouble(e.getElementsByTagName("lon").item(0).getTextContent()));
+                    cv.put(WiFiContract.WiFi.COLUMN_NAME_ALT, Double.parseDouble(e.getElementsByTagName("alt").item(0).getTextContent()));
+                    cv.put(WiFiContract.WiFi.COLUMN_NAME_GEOHASH, e.getElementsByTagName("geohash").item(0).getTextContent());
+                    cv.put(WiFiContract.WiFi.COLUMN_NAME_TIMESTAMP, tstamp);
+                    
+                    if (!c.moveToNext())
+                    {
+                        cv.put(WiFiContract.WiFi._ID, id);
+                        ctx.getContentResolver().insert(WiFiContract.WiFi.CONTENT_URI, cv);
+                    }
+                    else
+                        ctx.getContentResolver().update(WiFiContract.WiFi.uriById(id), cv, null, null);
+                    
+                    // marker becomes the max tstamp
+                    maxMarker = maxMarker < tstamp ? tstamp : maxMarker;
+                }
+                finally
+                {
+                    c.close();
+                }
+            }
+        }
+
+        return maxMarker;
     }
     
     public static void push(Context ctx, String username, String password) throws UnsupportedEncodingException, IOException

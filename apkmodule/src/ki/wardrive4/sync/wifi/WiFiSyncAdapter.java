@@ -28,10 +28,13 @@ import android.content.Context;
 import android.content.SyncResult;
 import android.net.ParseException;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import java.io.IOException;
+import javax.xml.parsers.ParserConfigurationException;
 import ki.wardrive4.C;
 import ki.wardrive4.authenticator.AuthenticationConst;
+import org.xml.sax.SAXException;
 
 /**
  * Remotely synchronizes the WiFi resource.
@@ -41,6 +44,9 @@ import ki.wardrive4.authenticator.AuthenticationConst;
 public class WiFiSyncAdapter extends AbstractThreadedSyncAdapter
 {
     private static final String TAG = C.PACKAGE + "/" + WiFiSyncAdapter.class.getSimpleName();
+    
+    private static final String SYNC_MARKER_KEY = C.PACKAGE+".sync.wifi.marker";
+    
     private final AccountManager mAccountManager;
     private final Context mContext;
 
@@ -57,8 +63,14 @@ public class WiFiSyncAdapter extends AbstractThreadedSyncAdapter
         try
         {
             String password = mAccountManager.blockingGetAuthToken(account, AuthenticationConst.AUTHTOKEN_TYPE, true);
+            
+            // Push all the wifis that need to be uploaded
             SyncUtils.push(mContext, account.name, password);
-            SyncUtils.fetch(mContext, account.name, password);
+            
+            // Use the mark technique and ask the new items since the last fetch.
+            long marker = getServerSyncMarker(account);
+            marker = SyncUtils.fetch(mContext, account.name, password, marker);
+            setServerSyncMarker(account, marker);
         }
         catch (final OperationCanceledException e)
         {
@@ -74,10 +86,43 @@ public class WiFiSyncAdapter extends AbstractThreadedSyncAdapter
             Log.e(TAG, e.getMessage(), e);
             sr.stats.numIoExceptions++;
         }
+        catch (final SAXException e)
+        {
+            Log.e(TAG, e.getMessage(), e);
+            sr.stats.numParseExceptions++;
+        }
+        catch (final ParserConfigurationException e)
+        {
+            Log.e(TAG, e.getMessage(), e);
+            sr.stats.numParseExceptions++;
+        }
         catch (final ParseException e)
         {
             Log.e(TAG, e.getMessage(), e);
             sr.stats.numParseExceptions++;
         }
+    }
+
+    /**
+     * This helper function fetches the last known high-water-mark
+     * we received from the server - or 0 if we've never synced.
+     * @param account the account we're syncing
+     * @return the change high-water-mark
+     */
+    private long getServerSyncMarker(Account account) {
+        String markerString = mAccountManager.getUserData(account, SYNC_MARKER_KEY);
+        if (!TextUtils.isEmpty(markerString)) {
+            return Long.parseLong(markerString);
+        }
+        return 0;
+    }
+
+    /**
+     * Save off the high-water-mark we receive back from the server.
+     * @param account The account we're syncing
+     * @param marker The high-water-mark we want to save.
+     */
+    private void setServerSyncMarker(Account account, long marker) {
+        mAccountManager.setUserData(account, SYNC_MARKER_KEY, Long.toString(marker));
     }
 }
