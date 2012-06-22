@@ -27,10 +27,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
 import java.io.File;
-import java.text.DateFormat;
 import ki.wardrive4.C;
 import ki.wardrive4.R;
 import ki.wardrive4.data.WiFiSecurity;
+import ki.wardrive4.data.WiFiSyncStatus;
 import ki.wardrive4.provider.wifi.WiFiContract;
 import ki.wardrive4.utils.Geohash;
 import ki.wardrive4.utils.SHA1Utils;
@@ -132,6 +132,8 @@ public class ImportOldTask extends AsyncTask<File, Integer, Void>
                 cv.put(WiFiContract.WiFi.COLUMN_NAME_ALT, alt);
                 cv.put(WiFiContract.WiFi.COLUMN_NAME_GEOHASH, geohash);
                 cv.put(WiFiContract.WiFi.COLUMN_NAME_TIMESTAMP, c.getLong(c.getColumnIndex("timestamp")));
+                
+                cv.put(WiFiContract.WiFi.COLUMN_NAME_SYNC_STATUS, WiFiSyncStatus.TO_UPDATE_UPLOAD.ordinal());
 
                 mContext.getContentResolver().insert(WiFiContract.WiFi.CONTENT_URI, cv);
 
