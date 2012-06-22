@@ -75,7 +75,8 @@ public class WiFiDatabaseHelper extends SQLiteOpenHelper
         + "alt real,"
         + "geohash text,"
         // Timestamp is the maximum of timestamps of the connected WiFiSpots
-        + "timestamp integer)",
+        + "timestamp integer,"
+        + "sync_status text)",
         // Maps a single WiFi measurement
         "create table if not exists wifispot("
         + "_id integer primary key autoincrement,"

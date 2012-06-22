@@ -66,6 +66,7 @@ public class WiFiContract
         public static final String COLUMN_NAME_ALT = "alt";
         public static final String COLUMN_NAME_GEOHASH = "geohash";
         public static final String COLUMN_NAME_TIMESTAMP = "timestamp";
+        public static final String COLUMN_NAME_SYNC_STATUS = "sync_status";
 
         // Order by default
         public static final String DEFAULT_ORDER_BY = _ID + " ASC";
