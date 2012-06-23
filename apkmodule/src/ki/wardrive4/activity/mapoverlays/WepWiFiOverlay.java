@@ -100,7 +100,7 @@ public class WepWiFiOverlay extends WiFiOverlay
                 between[2],
                 between[3]
             },
-            null);
+            WiFiContract.WiFi.COLUMN_NAME_LEVEL + " desc");
         try
         {
             int ct = 0;
