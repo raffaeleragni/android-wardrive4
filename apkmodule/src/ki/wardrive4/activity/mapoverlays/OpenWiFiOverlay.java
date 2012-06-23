@@ -76,8 +76,8 @@ public class OpenWiFiOverlay extends WiFiOverlay
     public void draw(Canvas c, MapView mapView, boolean shadow)
     {
         // Don't draw unless at zoom 15 or more
-        if (mapView.getZoomLevel() < 15)
-            return;
+//        if (mapView.getZoomLevel() < 15)
+//            return;
         
         GeoPoint topLeft = mapView.getProjection().fromPixels(0, 0);
         GeoPoint bottomRight = mapView.getProjection().fromPixels(mapView.getWidth(), mapView.getHeight());
