@@ -7,7 +7,6 @@ package ki.wardrive4.sync.wifi;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.util.Log;
 import java.io.IOException;
 import java.io.StringReader;
@@ -19,6 +18,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import ki.wardrive4.C;
 import ki.wardrive4.R;
+import ki.wardrive4.activity.tasks.ParseWiFiTask;
 import ki.wardrive4.data.WiFiSyncStatus;
 import ki.wardrive4.provider.wifi.WiFiContract;
 import org.apache.http.HttpResponse;
@@ -98,17 +98,22 @@ public class SyncUtils
                 try
                 {
                     ContentValues cv = new ContentValues();
+                    double lat = Double.parseDouble(e.getElementsByTagName("lat").item(0).getTextContent());
+                    double lon = Double.parseDouble(e.getElementsByTagName("lon").item(0).getTextContent());
+                    double alt = Double.parseDouble(e.getElementsByTagName("alt").item(0).getTextContent());
+                    String geohash = e.getElementsByTagName("geohash").item(0).getTextContent();
+                    int level = Integer.parseInt(e.getElementsByTagName("level").item(0).getTextContent());
                     long tstamp = Long.parseLong(e.getElementsByTagName("timestamp").item(0).getTextContent());
                     cv.put(WiFiContract.WiFi.COLUMN_NAME_BSSID, e.getElementsByTagName("bssid").item(0).getTextContent());
                     cv.put(WiFiContract.WiFi.COLUMN_NAME_SSID, e.getElementsByTagName("ssid").item(0).getTextContent());
                     cv.put(WiFiContract.WiFi.COLUMN_NAME_CAPABILITIES, e.getElementsByTagName("capabilities").item(0).getTextContent());
                     cv.put(WiFiContract.WiFi.COLUMN_NAME_SECURITY, Integer.parseInt(e.getElementsByTagName("security").item(0).getTextContent()));
-                    cv.put(WiFiContract.WiFi.COLUMN_NAME_LEVEL, Integer.parseInt(e.getElementsByTagName("level").item(0).getTextContent()));
+                    cv.put(WiFiContract.WiFi.COLUMN_NAME_LEVEL, level);
                     cv.put(WiFiContract.WiFi.COLUMN_NAME_FREQUENCY, Integer.parseInt(e.getElementsByTagName("frequency").item(0).getTextContent()));
-                    cv.put(WiFiContract.WiFi.COLUMN_NAME_LAT, Double.parseDouble(e.getElementsByTagName("lat").item(0).getTextContent()));
-                    cv.put(WiFiContract.WiFi.COLUMN_NAME_LON, Double.parseDouble(e.getElementsByTagName("lon").item(0).getTextContent()));
-                    cv.put(WiFiContract.WiFi.COLUMN_NAME_ALT, Double.parseDouble(e.getElementsByTagName("alt").item(0).getTextContent()));
-                    cv.put(WiFiContract.WiFi.COLUMN_NAME_GEOHASH, e.getElementsByTagName("geohash").item(0).getTextContent());
+                    cv.put(WiFiContract.WiFi.COLUMN_NAME_LAT, lat);
+                    cv.put(WiFiContract.WiFi.COLUMN_NAME_LON, lon);
+                    cv.put(WiFiContract.WiFi.COLUMN_NAME_ALT, alt);
+                    cv.put(WiFiContract.WiFi.COLUMN_NAME_GEOHASH, geohash);
                     cv.put(WiFiContract.WiFi.COLUMN_NAME_TIMESTAMP, tstamp);
                     
                     if (!c.moveToNext())
@@ -122,6 +127,36 @@ public class SyncUtils
                     {
                         ctx.getContentResolver().update(WiFiContract.WiFi.uriById(id), cv, null, null);
                         ct++;
+                    }
+                    
+                    // In the case this is a new one or there are still no records in the wifispot
+                    // fill them with these data, so that a measurement would not overwrite them.
+                    int spotct = ParseWiFiTask.WIFISPOT_MAX;
+                    Cursor c2 = ctx.getContentResolver().query(WiFiContract.WiFiSpot.CONTENT_URI,
+                        new String[]{WiFiContract.WiFiSpot._ID},
+                        WiFiContract.WiFiSpot.COLUMN_NAME_FK_WIFI + " = ?",
+                        new String[]{id},
+                        WiFiContract.WiFiSpot.COLUMN_NAME_LEVEL + " desc");
+                    try
+                    {
+                        spotct -= c2.getCount();
+                        // Insert as many as the empty spots are still available
+                        for (int j = 0; j < spotct; j++)
+                        {
+                            cv = new ContentValues();
+                            cv.put(WiFiContract.WiFiSpot.COLUMN_NAME_FK_WIFI, id);
+                            cv.put(WiFiContract.WiFiSpot.COLUMN_NAME_LAT, lat);
+                            cv.put(WiFiContract.WiFiSpot.COLUMN_NAME_LON, lon);
+                            cv.put(WiFiContract.WiFiSpot.COLUMN_NAME_ALT, alt);
+                            cv.put(WiFiContract.WiFiSpot.COLUMN_NAME_GEOHASH, geohash);
+                            cv.put(WiFiContract.WiFiSpot.COLUMN_NAME_LEVEL, level);
+                            cv.put(WiFiContract.WiFiSpot.COLUMN_NAME_TIMESTAMP, tstamp);
+                            ctx.getContentResolver().insert(WiFiContract.WiFiSpot.CONTENT_URI, cv);
+                        }
+                    }
+                    finally
+                    {
+                        c2.close();
                     }
                     
                     // marker becomes the max tstamp

@@ -42,6 +42,8 @@ import ki.wardrive4.utils.SHA1Utils;
  */
 public class ParseWiFiTask extends AsyncTask<List<ScannedWiFi>, Integer, Boolean>
 {
+    public static final int WIFISPOT_MAX = 3;
+    
     private Context mContext;
     private SharedPreferences mPreferences;
 
@@ -140,7 +142,7 @@ public class ParseWiFiTask extends AsyncTask<List<ScannedWiFi>, Integer, Boolean
         try
         {
             // Roll the cursor three times or less if less records.
-            for (int i = 0; i < 3 && c.moveToNext(); i++);
+            for (int i = 0; i < WIFISPOT_MAX && c.moveToNext(); i++);
             // List the remaining ids into the array
             while (c.moveToNext())
                 idsToDelete.add(c.getLong(c.getColumnIndex(WiFiContract.WiFiSpot._ID)));
