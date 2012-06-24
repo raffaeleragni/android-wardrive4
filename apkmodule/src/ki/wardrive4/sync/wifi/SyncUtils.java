@@ -230,17 +230,17 @@ public class SyncUtils
             {
                 String id = c.getString(c.getColumnIndex(WiFiContract.WiFi._ID));
                 sb.append("<wifi id=\"").append(id).append("\">");
-                sb.append("<bssid>").append(c.getString(c.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_BSSID))).append("</bssid>");
-                sb.append("<ssid>").append(c.getString(c.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_SSID))).append("</ssid>");
-                sb.append("<capabilities>").append(c.getString(c.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_CAPABILITIES))).append("</capabilities>");
-                sb.append("<security>").append(c.getString(c.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_SECURITY))).append("</security>");
-                sb.append("<level>").append(c.getString(c.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_LEVEL))).append("</level>");
-                sb.append("<frequency>").append(c.getString(c.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_FREQUENCY))).append("</frequency>");
-                sb.append("<lat>").append(c.getString(c.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_LAT))).append("</lat>");
-                sb.append("<lon>").append(c.getString(c.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_LON))).append("</lon>");
-                sb.append("<alt>").append(c.getString(c.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_ALT))).append("</alt>");
-                sb.append("<geohash>").append(c.getString(c.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_GEOHASH))).append("</geohash>");
-                sb.append("<timestamp>").append(c.getString(c.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_TIMESTAMP))).append("</timestamp>");
+                sb.append("<bssid>").append(encodeString(c.getString(c.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_BSSID)))).append("</bssid>");
+                sb.append("<ssid>").append(encodeString(c.getString(c.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_SSID)))).append("</ssid>");
+                sb.append("<capabilities>").append(encodeString(c.getString(c.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_CAPABILITIES)))).append("</capabilities>");
+                sb.append("<security>").append(encodeString(c.getString(c.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_SECURITY)))).append("</security>");
+                sb.append("<level>").append(encodeString(c.getString(c.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_LEVEL)))).append("</level>");
+                sb.append("<frequency>").append(encodeString(c.getString(c.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_FREQUENCY)))).append("</frequency>");
+                sb.append("<lat>").append(encodeString(c.getString(c.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_LAT)))).append("</lat>");
+                sb.append("<lon>").append(encodeString(c.getString(c.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_LON)))).append("</lon>");
+                sb.append("<alt>").append(encodeString(c.getString(c.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_ALT)))).append("</alt>");
+                sb.append("<geohash>").append(encodeString(c.getString(c.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_GEOHASH)))).append("</geohash>");
+                sb.append("<timestamp>").append(encodeString(c.getString(c.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_TIMESTAMP)))).append("</timestamp>");
                 sb.append("</wifi>");
                 ids.add(id);
             }
@@ -299,5 +299,13 @@ public class SyncUtils
         
         HttpResponse resp = client.execute(post);
         return resp.getStatusLine().getStatusCode();
+    }
+    
+    /**
+     * Encodes string for XML.
+     */
+    private static String encodeString(String s)
+    {
+        return s.replaceAll("&", "&amp;");
     }
 }
