@@ -75,32 +75,9 @@ public class WepWiFiOverlay extends WiFiOverlay
     @Override
     public void draw(Canvas c, MapView mapView, boolean shadow)
     {
-        // Don't draw unless at zoom 15 or more
-//        if (mapView.getZoomLevel() < 15)
-//            return;
-        
         GeoPoint topLeft = mapView.getProjection().fromPixels(0, 0);
         GeoPoint bottomRight = mapView.getProjection().fromPixels(mapView.getWidth(), mapView.getHeight());
-        String [] between = composeBetween(topLeft, bottomRight);
-        
-        Cursor cur = mContext.getContentResolver().query(WiFiContract.WiFi.CONTENT_URI,
-            new String[]
-            {
-                WiFiContract.WiFi.COLUMN_NAME_SSID,
-                WiFiContract.WiFi.COLUMN_NAME_LEVEL,
-                WiFiContract.WiFi.COLUMN_NAME_LAT,
-                WiFiContract.WiFi.COLUMN_NAME_LON
-            },
-            "security = ? and lat between ? and ? and lon between ? and ?",
-            new String[]
-            {
-                String.valueOf(WiFiSecurity.WEP.ordinal()),
-                between[0],
-                between[1],
-                between[2],
-                between[3]
-            },
-            WiFiContract.WiFi.COLUMN_NAME_LEVEL + " desc");
+        Cursor cur = getCursor(mContext, WiFiSecurity.WEP, topLeft, bottomRight);
         try
         {
             int ct = 0;

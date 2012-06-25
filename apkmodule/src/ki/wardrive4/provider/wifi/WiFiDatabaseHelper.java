@@ -89,8 +89,10 @@ public class WiFiDatabaseHelper extends SQLiteOpenHelper
         + "level integer"
         + ")",
         // Few indexes to optimize search.
-        // General wifi search is with lat/lon between AND security type
-        "create index if not exists wifisearch_1 on wifi (security, lat, lon)"
+        // General wifi search is with lat/lon between AND security type.
+        "create index if not exists wifisearch_1 on wifi (security, lat, lon)",
+        // A different filter also includes filtering for timestamp.
+        "create index if not exists wifisearch_2 on wifi (security, lat, lon, timestamp)"
     };
 
     // Statements needed to alter the database from a version to another.

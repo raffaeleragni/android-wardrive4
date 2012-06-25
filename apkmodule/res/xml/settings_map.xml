@@ -15,19 +15,4 @@
         android:key="mapshowlabels"
         android:defaultValue="true"
     />
-    <CheckBoxPreference
-        android:title="@string/settings_mapshowopen_title"
-        android:key="mapshowopen"
-        android:defaultValue="true"
-    />
-    <CheckBoxPreference
-        android:title="@string/settings_mapshowclosed_title"
-        android:key="mapshowclosed"
-        android:defaultValue="true"
-    />
-    <CheckBoxPreference
-        android:title="@string/settings_mapshowwep_title"
-        android:key="mapshowwep"
-        android:defaultValue="true"
-    />
 </PreferenceScreen>

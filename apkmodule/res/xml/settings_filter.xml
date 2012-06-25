@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:title="@string/settings_filterfromdatecheck_title"
+        android:key="filterfromdatecheck"
+    />
+    <ki.wardrive4.widgets.DatePreference
+        android:title="@string/settings_filterfromdate_title"
+        android:key="filterfromdate"
+    />
+    <CheckBoxPreference
+        android:title="@string/settings_mapshowopen_title"
+        android:key="mapshowopen"
+        android:defaultValue="true"
+    />
+    <CheckBoxPreference
+        android:title="@string/settings_mapshowclosed_title"
+        android:key="mapshowclosed"
+        android:defaultValue="true"
+    />
+    <CheckBoxPreference
+        android:title="@string/settings_mapshowwep_title"
+        android:key="mapshowwep"
+        android:defaultValue="true"
+    />
+    <CheckBoxPreference
+        android:title="@string/settings_mapshowwep_title"
+        android:key="mapshowwep"
+        android:defaultValue="true"
+    />
+</PreferenceScreen>

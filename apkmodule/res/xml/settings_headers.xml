@@ -6,4 +6,7 @@
     <header android:fragment="ki.wardrive4.activity.Settings$SettingsMap"
             android:title="@string/settings_header_map"/>
 
+    <header android:fragment="ki.wardrive4.activity.Settings$SettingsFilter"
+            android:title="@string/settings_header_filter"/>
+
 </preference-headers>

@@ -38,6 +38,8 @@ public class Settings extends PreferenceActivity
     public static final String PREF_MAPSHOWOPEN = "mapshowopen";
     public static final String PREF_MAPSHOWCLOSED = "mapshowclosed";
     public static final String PREF_MAPSHOWWEP = "mapshowwep";
+    public static final String PREF_FILTERFROMDATECHECK = "filterfromdatecheck";
+    public static final String PREF_FILTERFROMDATE = "filterfromdate";
     
     @Override
     public void onBuildHeaders(List<Header> target)
@@ -62,6 +64,16 @@ public class Settings extends PreferenceActivity
         {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.settings_map);
+        }
+    }
+    
+    public static class SettingsFilter extends PreferenceFragment
+    {
+        @Override
+        public void onCreate(Bundle savedInstanceState)
+        {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.settings_filter);
         }
     }
 }

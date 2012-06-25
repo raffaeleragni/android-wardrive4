@@ -18,13 +18,20 @@
  */
 package ki.wardrive4.activity.mapoverlays;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.RectF;
+import android.preference.PreferenceManager;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
+import ki.wardrive4.activity.Settings;
+import ki.wardrive4.data.WiFiSecurity;
+import ki.wardrive4.provider.wifi.WiFiContract;
 
 /**
  * Abstract overlay for WiFis.
@@ -39,6 +46,61 @@ public abstract class WiFiOverlay extends Overlay
     
     private boolean mShowLabels;
 
+    /**
+     * Returns the timestamp to filter for, or null if not to filter for it.
+     */
+    private Long getTimestampFilter(Context ctx)
+    {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx.getApplicationContext());
+        boolean isUsing = prefs.getBoolean(Settings.PREF_FILTERFROMDATECHECK, false);
+        long filterfromdate = prefs.getLong(Settings.PREF_FILTERFROMDATE, -1);
+        if (!isUsing || filterfromdate < 0)
+            return null;
+        return filterfromdate;
+    }
+    
+    public Cursor getCursor(Context ctx, WiFiSecurity type, GeoPoint topLeft, GeoPoint bottomRight)
+    {
+        String [] between = composeBetween(topLeft, bottomRight);
+        String[] projection = new String[]
+        {
+            WiFiContract.WiFi.COLUMN_NAME_SSID,
+            WiFiContract.WiFi.COLUMN_NAME_LEVEL,
+            WiFiContract.WiFi.COLUMN_NAME_LAT,
+            WiFiContract.WiFi.COLUMN_NAME_LON
+        };
+        String filterQuery = "security = ? and lat between ? and ? and lon between ? and ?";
+        String[] filterParams = new String[]
+        {
+            String.valueOf(type.ordinal()),
+            between[0],
+            between[1],
+            between[2],
+            between[3]
+        };
+        
+        Long timestampFilter = getTimestampFilter(ctx);
+        if (timestampFilter != null)
+        {
+            filterQuery = "security = ? and lat between ? and ? and lon between ? and ? and timestamp > ?";
+            filterParams = new String[]
+            {
+                String.valueOf(type.ordinal()),
+                between[0],
+                between[1],
+                between[2],
+                between[3],
+                String.valueOf(timestampFilter)
+            };
+        }
+        
+        return ctx.getContentResolver().query(
+            WiFiContract.WiFi.CONTENT_URI,
+            projection,
+            filterQuery,
+            filterParams, WiFiContract.WiFi.COLUMN_NAME_LEVEL + " desc");
+    }
+    
     public boolean isShowLabels()
     {
         return mShowLabels;
