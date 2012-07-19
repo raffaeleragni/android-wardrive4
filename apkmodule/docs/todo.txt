@@ -1,0 +1,4 @@
+
+Features that existed in the old and still missing.
+
+- General sending of KML file (ex. WiGlE, but also generic URL upload mechanism)
