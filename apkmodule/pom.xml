@@ -5,7 +5,7 @@
 
     <groupId>ki.wardrive4</groupId>
     <artifactId>wardrive4-apk</artifactId>
-    <version>1-SNAPSHOT</version>
+    <version>1</version>
     <packaging>apk</packaging>
     <name>wardrive4-apk</name>
 
@@ -111,5 +111,27 @@
             </plugin>
         </plugins>
     </build>
+    
+    <!-- Profile for producing an unsigned apk, to be signed later on -->
+    <profiles>
+        <profile>
+            <id>unsigned</id>
+            <build>
+                <finalName>${project.artifactId}-b${project.version}-unsigned</finalName>
+                <plugins>
+                    <plugin>
+                        <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+                        <artifactId>maven-android-plugin</artifactId>
+                        <inherited>true</inherited>
+                        <configuration>
+                            <sign>
+                                <debug>false</debug>
+                            </sign>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
