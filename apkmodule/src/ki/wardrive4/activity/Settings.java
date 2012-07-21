@@ -46,7 +46,9 @@ public class Settings extends PreferenceActivity
     public static final String PREF_MAPSHOWWEP = "mapshowwep";
     public static final String PREF_FILTERFROMDATECHECK = "filterfromdatecheck";
     public static final String PREF_FILTERFROMDATE = "filterfromdate";
-
+    public static final String PREF_WIGLE_USERNAME = "wigleUsername";
+    public static final String PREF_WIGLE_PASSWORD = "wiglePassword";
+    
     @Override
     public void onBuildHeaders(List<Header> target)
     {

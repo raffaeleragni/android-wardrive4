@@ -24,6 +24,7 @@ import android.content.pm.ActivityInfo;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -36,6 +37,8 @@ import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import ki.wardrive4.C;
 import ki.wardrive4.R;
 import ki.wardrive4.activity.mapoverlays.ClosedWiFiOverlay;
@@ -45,6 +48,7 @@ import ki.wardrive4.activity.tasks.ImportOldTask;
 import ki.wardrive4.service.ScanService;
 import static ki.wardrive4.activity.Settings.*;
 import ki.wardrive4.activity.tasks.ExportKmlTask;
+import ki.wardrive4.activity.tasks.WigleUploaderTask;
 
 /**
  * The main map viewer screen, a map showing WiFis currently in database.
@@ -420,7 +424,7 @@ public class MapViewer extends MapActivity
      */
     private void onExportMenuItemClick()
     {
-        final CharSequence[] items = {getText(R.string.dlg_export_kml)};
+        final CharSequence[] items = {getText(R.string.dlg_export_kml), getText(R.string.dlg_export_wigle)};
         new AlertDialog.Builder(this)
             .setTitle(R.string.dlg_export_title)
             .setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener()
@@ -431,9 +435,32 @@ public class MapViewer extends MapActivity
                     switch (item)
                     {
                         case 0:
+                        {
                             File outFile = new File(Environment.getExternalStorageDirectory(), "wardrive.kml");
-                            new ExportKmlTask(MapViewer.this).execute(outFile);
+                            new ExportKmlTask(MapViewer.this, null).execute(outFile);
                             break;
+                        }
+                        case 1:
+                        {
+                            // Export the KML and after that send it to WiGlE
+                            final File outFile = new File(Environment.getExternalStorageDirectory(), "wardrive.kml");
+                            new ExportKmlTask(MapViewer.this, new ExportKmlTask.OnFinish()
+                            {
+                                @Override
+                                public void onFinish()
+                                {
+                                    runOnUiThread(new Runnable()
+                                    {
+                                        @Override
+                                        public void run()
+                                        {
+                                            new WigleUploaderTask(MapViewer.this).execute(outFile);
+                                        }
+                                    });
+                                }
+                            }).execute(outFile);
+                            break;
+                        }
                     }
                     dialog.dismiss();
                 }

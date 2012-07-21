@@ -185,7 +185,8 @@ public class ImportOldTask extends AsyncTask<File, Integer, Void>
     @Override
     protected void onPostExecute(Void result)
     {
-        progressDialog.dismiss();
+        if (progressDialog != null)
+            progressDialog.dismiss();
         progressDialog = null;
     }
 }

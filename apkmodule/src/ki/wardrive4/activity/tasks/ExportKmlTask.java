@@ -44,6 +44,8 @@ import ki.wardrive4.provider.wifi.WiFiContract;
  */
 public class ExportKmlTask extends AsyncTask<File, Integer, Void>
 {
+    public interface OnFinish{void onFinish();}
+
     private static final String TAG = C.PACKAGE+"/"+ExportKmlTask.class.getSimpleName();
     
     private static final String STYLE_RED = "<styleUrl>#red</styleUrl>";
@@ -78,10 +80,13 @@ public class ExportKmlTask extends AsyncTask<File, Integer, Void>
     private ProgressDialog progressDialog = null;
     
     private Context mContext;
-
-    public ExportKmlTask(Context mContext)
+    
+    private OnFinish mOnFinish;
+    
+    public ExportKmlTask(Context mContext, OnFinish mOnFinish)
     {
         this.mContext = mContext;
+        this.mOnFinish = mOnFinish;
     }
     
     @Override
@@ -221,6 +226,9 @@ public class ExportKmlTask extends AsyncTask<File, Integer, Void>
         if (progressDialog != null)
             progressDialog.dismiss();
         progressDialog = null;
+        
+        if (mOnFinish != null)
+            mOnFinish.onFinish();
     }
 
 	private static void writeWiFi(Cursor c, FileWriter fw) throws IOException

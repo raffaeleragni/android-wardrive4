@@ -14,6 +14,7 @@
     
     <string name="dlg_export_title">Choose export type</string>
     <string name="dlg_export_kml">to KML (Google Earth)</string>
+    <string name="dlg_export_wigle">to KML for WiGlE (and Upload it)</string>
     
     <string name="dlg_importold_nofilefound_title">No file found to import</string>
     <string name="dlg_importoldprogress_title">Importing</string>
@@ -22,13 +23,17 @@
     <string name="dlg_exportkmlprogress_title">Exporting</string>
     <string name="dlg_exportkmlprogress_message">Exporting networks to KML...</string>
 
+    <string name="dlg_exportwigleprogress_title">Uploading</string>
+    <string name="dlg_exportwigleprogress_message">Uploading networks to WiGlE...</string>
+
     <!-- Strings on settings -->
     
     <string name="settings_header_account">Account and Synchronization</string>
     <string name="settings_account_manage">Manage wardrive Synchronization</string>
     <string name="settings_account_manage_summary">Change or create a synchronization to wardrive.org</string>
-<!--    <string name="settings_account_manage">Manage WiGlE Synchronization</string>
-    <string name="settings_account_manage_summary">Change WiGlE username and password</string>-->
+    <string name="settings_account_group_wigleSettings">WiGlE Account</string>
+    <string name="settings_account_wigleUpload_accountDetails_username">Username</string>
+    <string name="settings_account_wigleUpload_accountDetails_password">Password</string>
     
     <string name="settings_header_scanning">WiFi scanning</string>
     <string name="settings_gpserror_title">GPS Error</string>

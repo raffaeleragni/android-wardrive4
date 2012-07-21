@@ -5,4 +5,15 @@
         android:summary="@string/settings_account_manage_summary"
         android:key="accountPrefs">
     </PreferenceScreen>
+    <PreferenceCategory android:title="@string/settings_account_group_wigleSettings">
+        <EditTextPreference
+            android:title="@string/settings_account_wigleUpload_accountDetails_username"
+            android:key="wigleUsername"
+		/>
+        <EditTextPreference
+            android:title="@string/settings_account_wigleUpload_accountDetails_password"
+            android:key="wiglePassword"
+            android:password="true" 
+		/>
+    </PreferenceCategory>
 </PreferenceScreen>
