@@ -168,7 +168,8 @@ public class MapViewer extends MapActivity
         @Override
         public void onLocationChanged(Location lctn)
         {
-            mMapView.getController().animateTo(mMyLocationOverlay.getMyLocation());
+            if (mMapView != null && mMapView.getController() != null && mMyLocationOverlay != null && mMyLocationOverlay.getMyLocation() != null)
+                mMapView.getController().animateTo(mMyLocationOverlay.getMyLocation());
         }
 
         @Override
