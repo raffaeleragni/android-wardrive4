@@ -1,5 +1,8 @@
 <preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <header android:fragment="ki.wardrive4.activity.Settings$SettingsAccount"
+            android:title="@string/settings_header_account"/>
+    
     <header android:fragment="ki.wardrive4.activity.Settings$SettingsGPS"
             android:title="@string/settings_header_scanning"/>
 

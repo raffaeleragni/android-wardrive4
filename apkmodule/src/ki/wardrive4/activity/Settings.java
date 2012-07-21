@@ -18,11 +18,17 @@
  */
 package ki.wardrive4.activity;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.content.Intent;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import java.util.List;
 import ki.wardrive4.R;
+import ki.wardrive4.authenticator.AuthenticationConst;
+import ki.wardrive4.authenticator.AuthenticatorActivity;
 
 /**
  *
@@ -40,13 +46,44 @@ public class Settings extends PreferenceActivity
     public static final String PREF_MAPSHOWWEP = "mapshowwep";
     public static final String PREF_FILTERFROMDATECHECK = "filterfromdatecheck";
     public static final String PREF_FILTERFROMDATE = "filterfromdate";
-    
+
     @Override
     public void onBuildHeaders(List<Header> target)
     {
         loadHeadersFromResource(R.xml.settings_headers, target);
     }
-    
+
+    public static class SettingsAccount extends PreferenceFragment
+    {
+        @Override
+        public void onCreate(Bundle savedInstanceState)
+        {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.settings_account);
+
+            Preference accountPrefs = findPreference("accountPrefs");
+            accountPrefs.setOnPreferenceClickListener(onAccountClick);
+        }
+        
+        Preference.OnPreferenceClickListener onAccountClick = new Preference.OnPreferenceClickListener()
+        {
+            @Override
+            public boolean onPreferenceClick(Preference prfrnc)
+            {
+                final AccountManager am = AccountManager.get(getActivity());
+                Account[] accounts = am.getAccountsByType(AuthenticationConst.ACCOUNT_TYPE);
+                boolean newAccount = accounts.length == 0;
+
+                if (newAccount)
+                    startActivity(new Intent(getActivity(), AuthenticatorActivity.class));
+                else
+                    startActivity(new Intent(android.provider.Settings.ACTION_SYNC_SETTINGS));
+
+                return true;
+            }
+        };
+    }
+
     public static class SettingsGPS extends PreferenceFragment
     {
         @Override
@@ -56,7 +93,7 @@ public class Settings extends PreferenceActivity
             addPreferencesFromResource(R.xml.settings_gps);
         }
     }
-    
+
     public static class SettingsMap extends PreferenceFragment
     {
         @Override
@@ -66,7 +103,7 @@ public class Settings extends PreferenceActivity
             addPreferencesFromResource(R.xml.settings_map);
         }
     }
-    
+
     public static class SettingsFilter extends PreferenceFragment
     {
         @Override

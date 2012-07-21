@@ -24,6 +24,12 @@
 
     <!-- Strings on settings -->
     
+    <string name="settings_header_account">Account and Synchronization</string>
+    <string name="settings_account_manage">Manage wardrive Synchronization</string>
+    <string name="settings_account_manage_summary">Change or create a synchronization to wardrive.org</string>
+<!--    <string name="settings_account_manage">Manage WiGlE Synchronization</string>
+    <string name="settings_account_manage_summary">Change WiGlE username and password</string>-->
+    
     <string name="settings_header_scanning">WiFi scanning</string>
     <string name="settings_gpserror_title">GPS Error</string>
     <string name="settings_gpserror_summary">Acceptable error of GPS calculation in meters. When error is bigger, WiFi are not scanned. Default is 50.</string>
