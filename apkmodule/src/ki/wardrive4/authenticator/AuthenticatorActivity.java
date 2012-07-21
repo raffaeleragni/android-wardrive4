@@ -142,8 +142,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
             // automatic sync
             ContentResolver.setSyncAutomatically(account, WiFiContract.AUTHORITY, true);
             // Check data each 1h max
-            // Do not do it for now - rely in the ContentManager's syncToNetwork flag
-//            ContentResolver.addPeriodicSync(account, WiFiContract.AUTHORITY, new Bundle(), 3600);
+            ContentResolver.addPeriodicSync(account, WiFiContract.AUTHORITY, new Bundle(), 3600);
         }
         else
             mAccountManager.setPassword(account, mPassword);
