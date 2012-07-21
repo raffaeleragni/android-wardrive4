@@ -18,6 +18,7 @@
  */
 package ki.wardrive4.activity.tasks;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -25,6 +26,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -53,9 +55,9 @@ public class WigleUploaderTask extends AsyncTask<File, Integer, Void>
     
     private ProgressDialog progressDialog = null;
     
-    private Context mContext;
+    private Activity mContext;
 
-    public WigleUploaderTask(Context mContext)
+    public WigleUploaderTask(Activity mContext)
     {
         this.mContext = mContext;
     }
@@ -69,7 +71,17 @@ public class WigleUploaderTask extends AsyncTask<File, Integer, Void>
         String username = prefs.getString(Settings.PREF_WIGLE_USERNAME, null);
         String password = prefs.getString(Settings.PREF_WIGLE_PASSWORD, null);
         if (username == null || username.length() == 0 || password == null || password.length() == 0)
+        {
+            mContext.runOnUiThread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    Toast.makeText(mContext, R.string.dlg_exportwigleprogress_err_no_user_and_pass, Toast.LENGTH_LONG).show();
+                }
+            });
 			return null;
+        }
 		
         try
         {

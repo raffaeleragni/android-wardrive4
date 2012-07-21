@@ -25,6 +25,7 @@
 
     <string name="dlg_exportwigleprogress_title">Uploading</string>
     <string name="dlg_exportwigleprogress_message">Uploading networks to WiGlE...</string>
+    <string name="dlg_exportwigleprogress_err_no_user_and_pass">Error: Username and Password are not set.</string>
 
     <!-- Strings on settings -->
     
