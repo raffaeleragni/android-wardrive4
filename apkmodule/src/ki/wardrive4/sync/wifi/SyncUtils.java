@@ -306,6 +306,8 @@ public class SyncUtils
      */
     private static String encodeString(String s)
     {
+        if (s == null)
+            return s;
         return s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
     }
 }
