@@ -5,7 +5,7 @@
 
     <groupId>ki.wardrive4</groupId>
     <artifactId>wardrive4-apk</artifactId>
-    <version>4</version>
+    <version>5-SNAPSHOT</version>
     <packaging>apk</packaging>
     <name>wardrive4-apk</name>
 
