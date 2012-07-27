@@ -15,4 +15,9 @@
         android:key="mapshowlabels"
         android:defaultValue="true"
     />
+    <CheckBoxPreference
+        android:title="@string/settings_mapshowstats_title"
+        android:key="mapshowstats"
+        android:defaultValue="false"
+    />
 </PreferenceScreen>

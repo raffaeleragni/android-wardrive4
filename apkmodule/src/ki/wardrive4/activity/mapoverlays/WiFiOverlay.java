@@ -113,7 +113,7 @@ public abstract class WiFiOverlay extends Overlay
         this.mShowLabels = mShowLabels;
     }
     
-    protected void drawSingleWiFi(Canvas canvas, MapView mapView, GeoPoint geoPoint, String title, int level, Paint stroke, Paint fill, Paint text)
+    protected void drawSingleWiFi(Canvas canvas, MapView mapView, GeoPoint geoPoint, String title, int level, Paint stroke, Paint fill, Paint text, float density)
     {
         Point point = mapView.getProjection().toPixels(geoPoint, new Point());
         // The bigness of the circle. Decrement the circle radius so that a weak
@@ -123,17 +123,18 @@ public abstract class WiFiOverlay extends Overlay
         bigness = bigness < 2 ? 2 : bigness;
         bigness = bigness > CIRCLE_RADIUS-1 ? CIRCLE_RADIUS-1 : bigness;
 
+        // Text size is already density-applied
         float textSize = text.getTextSize();
         
-        canvas.drawCircle(point.x, point.y, CIRCLE_RADIUS, stroke);
-        canvas.drawCircle(point.x, point.y, bigness, fill);
+        canvas.drawCircle(point.x, point.y, CIRCLE_RADIUS*density, stroke);
+        canvas.drawCircle(point.x, point.y, bigness*density, fill);
 
         if (mShowLabels && title != null && title.length() > 0)
         {
             RectF rect = new RectF(0, 0, getTextWidth(title, text) + 8, textSize + 4);
             rect.offset(point.x + CIRCLE_RADIUS - CIRCLE_RADIUS/4, point.y + CIRCLE_RADIUS - CIRCLE_RADIUS/4);
-            canvas.drawRoundRect(rect, textSize/3, textSize/3, fill);
-            canvas.drawText(title, rect.left + 4, rect.top + textSize, text);
+            canvas.drawRoundRect(rect, textSize/(3*density), textSize/(3*density), fill);
+            canvas.drawText(title, rect.left + 2*density, rect.top + textSize, text);
         }
     }
     

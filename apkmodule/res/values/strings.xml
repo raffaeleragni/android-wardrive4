@@ -53,6 +53,12 @@
     <string name="settings_mapshowopen_title">Show open WiFis</string>
     <string name="settings_mapshowclosed_title">Show closed WiFis</string>
     <string name="settings_mapshowwep_title">Show WEP WiFis</string>
+    <string name="settings_mapshowstats_title">Show Statistics</string>
+    
+    <string name="stats_total_wifi">Total WiFi count:</string>
+    <string name="stats_total_open_wifi">Open count:</string>
+    <string name="stats_total_wep_wifi">WEP count:</string>
+    <string name="stats_total_closed_wifi">Closed count:</string>
     
     <!-- General messages, for example common buttons -->
     <string name="OK">OK</string>

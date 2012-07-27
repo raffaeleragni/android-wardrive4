@@ -57,6 +57,7 @@ public class WiFiContentProvider extends ContentProvider
 
         // Maps a wide catalogue selection projection
         sProjectionMap.put(WiFiContract.WiFi._ID, WiFiContract.WiFi._ID);
+        sProjectionMap.put("count(*)", "count(*)");
         sProjectionMap.put(WiFiContract.WiFi.COLUMN_NAME_BSSID, WiFiContract.WiFi.COLUMN_NAME_BSSID);
         sProjectionMap.put(WiFiContract.WiFi.COLUMN_NAME_SSID, WiFiContract.WiFi.COLUMN_NAME_SSID);
         sProjectionMap.put(WiFiContract.WiFi.COLUMN_NAME_CAPABILITIES, WiFiContract.WiFi.COLUMN_NAME_CAPABILITIES);

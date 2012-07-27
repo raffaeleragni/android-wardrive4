@@ -37,6 +37,7 @@ public class OpenWiFiOverlay extends WiFiOverlay
 {
     private static final int MAX_DRAW = 20;
     
+    private static final int TEXT_SIZE = 14;
     private static final Paint STROKE;
     private static final Paint FILL;
     private static final Paint TEXT;
@@ -63,6 +64,8 @@ public class OpenWiFiOverlay extends WiFiOverlay
         
         TEXT.setTextSize(16);
         TEXT.setTextAlign(Paint.Align.LEFT);
+        
+        TEXT.setTextSize(14);
     }
     
     private Context mContext;
@@ -70,11 +73,16 @@ public class OpenWiFiOverlay extends WiFiOverlay
     public OpenWiFiOverlay(Context mContext)
     {
         this.mContext = mContext;
+        
+        // Apply screen density to text
+        float density = mContext.getApplicationContext().getResources().getDisplayMetrics().density;
+        TEXT.setTextSize(TEXT_SIZE * density);
     }
 
     @Override
     public void draw(Canvas c, MapView mapView, boolean shadow)
     {
+        float density = mContext.getApplicationContext().getResources().getDisplayMetrics().density;
         GeoPoint topLeft = mapView.getProjection().fromPixels(0, 0);
         GeoPoint bottomRight = mapView.getProjection().fromPixels(mapView.getWidth(), mapView.getHeight());
         Cursor cur = getCursor(mContext, WiFiSecurity.OPEN, topLeft, bottomRight, MAX_DRAW);
@@ -89,7 +97,7 @@ public class OpenWiFiOverlay extends WiFiOverlay
                 double lon = cur.getDouble(cur.getColumnIndex(WiFiContract.WiFi.COLUMN_NAME_LON));
                 GeoPoint gp = new GeoPoint((int) (lat * 1E6), (int) (lon * 1E6));
                 
-                drawSingleWiFi(c, mapView, gp, ssid, level, STROKE, FILL, TEXT);
+                drawSingleWiFi(c, mapView, gp, ssid, level, STROKE, FILL, TEXT, density);
                 
                 ct++;
                 if (ct > MAX_DRAW)

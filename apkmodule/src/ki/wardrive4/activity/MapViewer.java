@@ -20,8 +20,6 @@ package ki.wardrive4.activity;
 
 import android.app.AlertDialog;
 import android.content.*;
-import static android.content.Context.LOCATION_SERVICE;
-import static android.content.Context.MODE_PRIVATE;
 import android.content.pm.ActivityInfo;
 import android.location.Location;
 import android.location.LocationListener;
@@ -43,6 +41,7 @@ import ki.wardrive4.R;
 import static ki.wardrive4.activity.Settings.*;
 import ki.wardrive4.activity.mapoverlays.ClosedWiFiOverlay;
 import ki.wardrive4.activity.mapoverlays.OpenWiFiOverlay;
+import ki.wardrive4.activity.mapoverlays.StatsOverlay;
 import ki.wardrive4.activity.mapoverlays.WepWiFiOverlay;
 import ki.wardrive4.activity.tasks.ExportKmlTask;
 import ki.wardrive4.activity.tasks.ImportOldTask;
@@ -73,6 +72,7 @@ public class MapViewer extends MapActivity
     private OpenWiFiOverlay mOpenWiFiOverlay;
     private WepWiFiOverlay mWepWiFiOverlay;
     private ClosedWiFiOverlay mClosedWiFiOverlay;
+    private StatsOverlay mStatsOverlay;
     
     private SharedPreferences mPreferences;
 
@@ -119,6 +119,7 @@ public class MapViewer extends MapActivity
         mOpenWiFiOverlay = new OpenWiFiOverlay(this);
         mWepWiFiOverlay = new WepWiFiOverlay(this);
         mClosedWiFiOverlay = new ClosedWiFiOverlay(this);
+        mStatsOverlay = new StatsOverlay(this);
         
         IntentFilter filter = new IntentFilter();
         filter.addAction(ScanService.BROADCAST_ACTION_STARTED);
@@ -227,6 +228,17 @@ public class MapViewer extends MapActivity
         {
             if (mMapView.getOverlays().contains(mClosedWiFiOverlay))
                 mMapView.getOverlays().remove(mClosedWiFiOverlay);
+        }
+        
+        if (mPreferences.getBoolean(PREF_MAPSHOWSTATS, false))
+        {
+            if (!mMapView.getOverlays().contains(mStatsOverlay))
+                mMapView.getOverlays().add(mStatsOverlay);
+        }
+        else
+        {
+            if (mMapView.getOverlays().contains(mStatsOverlay))
+                mMapView.getOverlays().remove(mStatsOverlay);
         }
         
         LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
