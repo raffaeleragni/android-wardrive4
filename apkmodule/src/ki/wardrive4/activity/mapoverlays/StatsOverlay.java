@@ -94,7 +94,7 @@ public class StatsOverlay extends Overlay
         textLength = TEXT.measureText(txt);
         c.drawText(txt, bounds.left + width/2 - textLength/2, bounds.top + (textSize+mLinePadding)*(ct++), TEXT);
         
-        txt = mContext.getText(R.string.stats_total_wep_wifi) + " " + mStats.count;
+        txt = mContext.getText(R.string.stats_total_wep_wifi) + " " + mStats.countWEP;
         textLength = TEXT.measureText(txt);
         c.drawText(txt, bounds.left + width/2 - textLength/2, bounds.top + (textSize+mLinePadding)*(ct++), TEXT);
         
