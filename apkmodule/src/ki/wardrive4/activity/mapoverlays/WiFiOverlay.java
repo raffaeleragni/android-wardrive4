@@ -21,6 +21,8 @@ package ki.wardrive4.activity.mapoverlays;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.CursorWindow;
+import android.database.sqlite.SQLiteCursor;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -59,7 +61,7 @@ public abstract class WiFiOverlay extends Overlay
         return filterfromdate;
     }
     
-    public Cursor getCursor(Context ctx, WiFiSecurity type, GeoPoint topLeft, GeoPoint bottomRight)
+    public Cursor getCursor(Context ctx, CursorWindow cursorWindow, WiFiSecurity type, GeoPoint topLeft, GeoPoint bottomRight)
     {
         String [] between = composeBetween(topLeft, bottomRight);
         String[] projection = new String[]
@@ -94,11 +96,16 @@ public abstract class WiFiOverlay extends Overlay
             };
         }
         
-        return ctx.getContentResolver().query(
+        SQLiteCursor cursor = (SQLiteCursor) ctx.getContentResolver().query(
             WiFiContract.WiFi.CONTENT_URI,
             projection,
             filterQuery,
             filterParams, WiFiContract.WiFi.COLUMN_NAME_LEVEL + " desc");
+        
+        if (cursorWindow != null)
+            cursor.setWindow(cursorWindow);
+        
+        return cursor;
     }
     
     public boolean isShowLabels()

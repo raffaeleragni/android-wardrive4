@@ -20,6 +20,7 @@ package ki.wardrive4.activity.mapoverlays;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.CursorWindow;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -66,6 +67,8 @@ public class OpenWiFiOverlay extends WiFiOverlay
     }
     
     private Context mContext;
+    
+    public static CursorWindow cursorWindow = new CursorWindow("WepWiFiOverlay-CursorWindow"); 
 
     public OpenWiFiOverlay(Context mContext)
     {
@@ -77,7 +80,7 @@ public class OpenWiFiOverlay extends WiFiOverlay
     {
         GeoPoint topLeft = mapView.getProjection().fromPixels(0, 0);
         GeoPoint bottomRight = mapView.getProjection().fromPixels(mapView.getWidth(), mapView.getHeight());
-        Cursor cur = getCursor(mContext, WiFiSecurity.OPEN, topLeft, bottomRight);
+        Cursor cur = getCursor(mContext, cursorWindow, WiFiSecurity.OPEN, topLeft, bottomRight);
         try
         {
             int ct = 0;
