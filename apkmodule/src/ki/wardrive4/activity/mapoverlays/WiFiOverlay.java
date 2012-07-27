@@ -18,11 +18,9 @@
  */
 package ki.wardrive4.activity.mapoverlays;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.CursorWindow;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;

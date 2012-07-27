@@ -20,7 +20,6 @@ package ki.wardrive4.activity.mapoverlays;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.CursorWindow;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;

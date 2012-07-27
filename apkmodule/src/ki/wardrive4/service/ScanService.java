@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 import ki.wardrive4.C;
 import ki.wardrive4.R;
-import ki.wardrive4.activity.Launcher;
 import ki.wardrive4.activity.MapViewer;
 import ki.wardrive4.data.ScannedWiFi;
 

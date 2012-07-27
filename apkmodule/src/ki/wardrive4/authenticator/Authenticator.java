@@ -25,8 +25,6 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import ki.wardrive4.C;
 
 /**

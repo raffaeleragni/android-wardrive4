@@ -20,11 +20,12 @@ package ki.wardrive4.activity;
 
 import android.app.AlertDialog;
 import android.content.*;
+import static android.content.Context.LOCATION_SERVICE;
+import static android.content.Context.MODE_PRIVATE;
 import android.content.pm.ActivityInfo;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -37,18 +38,16 @@ import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import ki.wardrive4.C;
 import ki.wardrive4.R;
+import static ki.wardrive4.activity.Settings.*;
 import ki.wardrive4.activity.mapoverlays.ClosedWiFiOverlay;
 import ki.wardrive4.activity.mapoverlays.OpenWiFiOverlay;
 import ki.wardrive4.activity.mapoverlays.WepWiFiOverlay;
-import ki.wardrive4.activity.tasks.ImportOldTask;
-import ki.wardrive4.service.ScanService;
-import static ki.wardrive4.activity.Settings.*;
 import ki.wardrive4.activity.tasks.ExportKmlTask;
+import ki.wardrive4.activity.tasks.ImportOldTask;
 import ki.wardrive4.activity.tasks.WigleUploaderTask;
+import ki.wardrive4.service.ScanService;
 
 /**
  * The main map viewer screen, a map showing WiFis currently in database.
