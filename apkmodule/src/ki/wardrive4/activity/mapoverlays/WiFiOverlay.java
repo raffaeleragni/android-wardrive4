@@ -61,7 +61,7 @@ public abstract class WiFiOverlay extends Overlay
         return filterfromdate;
     }
     
-    public Cursor getCursor(Context ctx, CursorWindow cursorWindow, WiFiSecurity type, GeoPoint topLeft, GeoPoint bottomRight)
+    public Cursor getCursor(Context ctx, WiFiSecurity type, GeoPoint topLeft, GeoPoint bottomRight, int max)
     {
         String [] between = composeBetween(topLeft, bottomRight);
         String[] projection = new String[]
@@ -100,7 +100,7 @@ public abstract class WiFiOverlay extends Overlay
             WiFiContract.WiFi.CONTENT_URI,
             projection,
             filterQuery,
-            filterParams, WiFiContract.WiFi.COLUMN_NAME_LEVEL + " desc");
+            filterParams, WiFiContract.WiFi.COLUMN_NAME_LEVEL + " desc limit " + max);
                 
         return cursor;
     }

@@ -68,8 +68,6 @@ public class WepWiFiOverlay extends WiFiOverlay
     
     private Context mContext;
     
-    public static CursorWindow cursorWindow = new CursorWindow("WepWiFiOverlay-CursorWindow"); 
-
     public WepWiFiOverlay(Context mContext)
     {
         this.mContext = mContext;
@@ -80,7 +78,7 @@ public class WepWiFiOverlay extends WiFiOverlay
     {
         GeoPoint topLeft = mapView.getProjection().fromPixels(0, 0);
         GeoPoint bottomRight = mapView.getProjection().fromPixels(mapView.getWidth(), mapView.getHeight());
-        Cursor cur = getCursor(mContext, cursorWindow, WiFiSecurity.WEP, topLeft, bottomRight);
+        Cursor cur = getCursor(mContext, WiFiSecurity.WEP, topLeft, bottomRight, MAX_DRAW);
         try
         {
             int ct = 0;
