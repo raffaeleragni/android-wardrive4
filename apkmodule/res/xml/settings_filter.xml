@@ -23,9 +23,4 @@
         android:key="mapshowwep"
         android:defaultValue="true"
     />
-    <CheckBoxPreference
-        android:title="@string/settings_mapshowwep_title"
-        android:key="mapshowwep"
-        android:defaultValue="true"
-    />
 </PreferenceScreen>
