@@ -24,6 +24,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.AsyncTask;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import ki.wardrive4.R;
@@ -76,7 +77,7 @@ public class StatsOverlay extends Overlay
     {
         // Update data only each delay max
         if (System.currentTimeMillis() - mLastUpdateStamp > UPDATE_DELAY_MS)
-            updateData();
+            new UpdateDataTask().doInBackground();
         
         Rect bounds = c.getClipBounds();
         float width = Math.abs(bounds.right - bounds.left);
@@ -103,71 +104,77 @@ public class StatsOverlay extends Overlay
         c.drawText(txt, bounds.left + width/2 - textLength/2, bounds.top + (textSize+mLinePadding)*(ct++), TEXT);
     }
     
-    private void updateData()
+    private class UpdateDataTask extends AsyncTask<Void, Void, Void>
     {
-        Cursor cursor;
-        String filterQuery;
-        String[] filterParams;
-        
-        cursor = mContext.getContentResolver().query(
-            WiFiContract.WiFi.CONTENT_URI,
-            new String[]{WiFiContract.WiFi._ID},
-            null, null, null);
-        try
+        @Override
+        protected Void doInBackground(Void... paramss)
         {
-            mStats.count = cursor.getCount();
-        }
-        finally
-        {
-            cursor.close();
-        }
-        
-        filterQuery = "security = ?";
-        filterParams = new String[] {String.valueOf(WiFiSecurity.OPEN.ordinal())};
-        cursor = mContext.getContentResolver().query(
-            WiFiContract.WiFi.CONTENT_URI,
-            new String[]{WiFiContract.WiFi._ID},
-            filterQuery, filterParams, null);
-        try
-        {
-            mStats.countOpen = cursor.getCount();
-        }
-        finally
-        {
-            cursor.close();
-        }
-        
-        filterQuery = "security = ?";
-        filterParams = new String[] {String.valueOf(WiFiSecurity.WEP.ordinal())};
-        cursor = mContext.getContentResolver().query(
-            WiFiContract.WiFi.CONTENT_URI,
-            new String[]{WiFiContract.WiFi._ID},
-            filterQuery, filterParams, null);
-        try
-        {
-            mStats.countWEP = cursor.getCount();
-        }
-        finally
-        {
-            cursor.close();
-        }
-        
-        filterQuery = "security = ?";
-        filterParams = new String[] {String.valueOf(WiFiSecurity.CLOSED.ordinal())};
-        cursor = mContext.getContentResolver().query(
-            WiFiContract.WiFi.CONTENT_URI,
-            new String[]{WiFiContract.WiFi._ID},
-            filterQuery, filterParams, null);
-        try
-        {
-            mStats.countClosed = cursor.getCount();
-        }
-        finally
-        {
-            cursor.close();
-        }
+            Cursor cursor;
+            String filterQuery;
+            String[] filterParams;
 
-        mLastUpdateStamp = System.currentTimeMillis();
+            cursor = mContext.getContentResolver().query(
+                WiFiContract.WiFi.CONTENT_URI,
+                new String[]{WiFiContract.WiFi._ID},
+                null, null, null);
+            try
+            {
+                mStats.count = cursor.getCount();
+            }
+            finally
+            {
+                cursor.close();
+            }
+
+            filterQuery = "security = ?";
+            filterParams = new String[] {String.valueOf(WiFiSecurity.OPEN.ordinal())};
+            cursor = mContext.getContentResolver().query(
+                WiFiContract.WiFi.CONTENT_URI,
+                new String[]{WiFiContract.WiFi._ID},
+                filterQuery, filterParams, null);
+            try
+            {
+                mStats.countOpen = cursor.getCount();
+            }
+            finally
+            {
+                cursor.close();
+            }
+
+            filterQuery = "security = ?";
+            filterParams = new String[] {String.valueOf(WiFiSecurity.WEP.ordinal())};
+            cursor = mContext.getContentResolver().query(
+                WiFiContract.WiFi.CONTENT_URI,
+                new String[]{WiFiContract.WiFi._ID},
+                filterQuery, filterParams, null);
+            try
+            {
+                mStats.countWEP = cursor.getCount();
+            }
+            finally
+            {
+                cursor.close();
+            }
+
+            filterQuery = "security = ?";
+            filterParams = new String[] {String.valueOf(WiFiSecurity.CLOSED.ordinal())};
+            cursor = mContext.getContentResolver().query(
+                WiFiContract.WiFi.CONTENT_URI,
+                new String[]{WiFiContract.WiFi._ID},
+                filterQuery, filterParams, null);
+            try
+            {
+                mStats.countClosed = cursor.getCount();
+            }
+            finally
+            {
+                cursor.close();
+            }
+
+            mLastUpdateStamp = System.currentTimeMillis();
+            
+            return null;
+        }
     }
     
     private static class Stats
