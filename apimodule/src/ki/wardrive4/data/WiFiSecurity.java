@@ -31,11 +31,12 @@ public enum WiFiSecurity
     
     public static WiFiSecurity fromCapabilities(String capabilities)
     {
-        if (capabilities == null || capabilities.length() == 0)
-            return OPEN;
-        if (capabilities.toUpperCase().contains("WEP"))
+        if (capabilities != null && (capabilities.contains("WPA") || capabilities.contains("WPS")))
+            return CLOSED;
+        if (capabilities != null && capabilities.contains("WEP"))
             return WEP;
-        return CLOSED;
+        
+        return OPEN;
     }
     
     public static WiFiSecurity valueOf(int i)

@@ -19,10 +19,16 @@
 package ki.wardrive4.activity;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import java.util.Date;
 import ki.wardrive4.C;
+import ki.wardrive4.data.WiFiSecurity;
+import ki.wardrive4.provider.wifi.WiFiContract;
 
 /**
  * Launcher entry point.
@@ -38,6 +44,8 @@ import ki.wardrive4.C;
  */
 public class Launcher extends Activity
 {
+    private static final String PREF_FIX_OPENWIFI = "fix_openwifi";
+    
     private static final String TAG = C.PACKAGE+"/"+Launcher.class.getSimpleName();
     
     @Override
@@ -45,9 +53,43 @@ public class Launcher extends Activity
     {
         super.onCreate(savedInstanceState);
         
+        openWiFiFix();
+        
         startActivity(new Intent(this, MapViewer.class));
         finish();
         
         Log.i(TAG, "Created activity: Launcher");
+    }
+    
+    /**
+     * Android (or someone else) changed how capabilities are printed and so
+     * open stuff is not recognized anymore.
+     * This fixes the already inserted record using the new logic.
+     * Also update the timestamp so that the sync will transmit the data.
+     */
+    private void openWiFiFix()
+    {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getApplication());
+        if (prefs.contains(PREF_FIX_OPENWIFI))
+            return;
+        
+        ContentValues cv = new ContentValues();
+        cv.put(WiFiContract.WiFi.COLUMN_NAME_SECURITY, WiFiSecurity.OPEN.ordinal());
+        cv.put(WiFiContract.WiFi.COLUMN_NAME_TIMESTAMP, new Date().getTime());
+        getContentResolver().update(
+                WiFiContract.WiFi.CONTENT_URI,
+                cv,
+                "capabilities not like ? and capabilities not like ? and capabilities not like ? and security <> ?",
+                new String[]
+                {
+                    "%WPA%",
+                    "%WEP%",
+                    "%WPS%",
+                    String.valueOf(WiFiSecurity.OPEN.ordinal())
+                });
+        
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(PREF_FIX_OPENWIFI, true);
+        editor.commit();
     }
 }
