@@ -25,7 +25,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import java.util.Date;
 import ki.wardrive4.C;
 import ki.wardrive4.data.WiFiSecurity;
 import ki.wardrive4.provider.wifi.WiFiContract;
@@ -75,7 +74,7 @@ public class Launcher extends Activity
         
         ContentValues cv = new ContentValues();
         cv.put(WiFiContract.WiFi.COLUMN_NAME_SECURITY, WiFiSecurity.OPEN.ordinal());
-        cv.put(WiFiContract.WiFi.COLUMN_NAME_TIMESTAMP, new Date().getTime());
+//        cv.put(WiFiContract.WiFi.COLUMN_NAME_TIMESTAMP, new Date().getTime());
         getContentResolver().update(
                 WiFiContract.WiFi.CONTENT_URI,
                 cv,
