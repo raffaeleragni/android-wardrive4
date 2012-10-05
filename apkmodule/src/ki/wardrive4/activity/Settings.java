@@ -20,6 +20,9 @@ package ki.wardrive4.activity;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.AlertDialog;
+import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -29,6 +32,7 @@ import java.util.List;
 import ki.wardrive4.R;
 import ki.wardrive4.authenticator.AuthenticationConst;
 import ki.wardrive4.authenticator.AuthenticatorActivity;
+import ki.wardrive4.provider.wifi.WiFiContract;
 
 /**
  *
@@ -107,13 +111,41 @@ public class Settings extends PreferenceActivity
         }
     }
 
-    public static class SettingsFilter extends PreferenceFragment
+    public static class SettingsData extends PreferenceFragment
     {
         @Override
         public void onCreate(Bundle savedInstanceState)
         {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.settings_filter);
+            addPreferencesFromResource(R.xml.settings_data);
+            
+            Preference accountPrefs = findPreference("erasealldata");
+            accountPrefs.setOnPreferenceClickListener(onEraseAllClick);
         }
+        
+        Preference.OnPreferenceClickListener onEraseAllClick = new Preference.OnPreferenceClickListener()
+        {
+            @Override
+            public boolean onPreferenceClick(Preference prfrnc)
+            {
+                new AlertDialog.Builder(SettingsData.this.getActivity())
+                    .setTitle(R.string.settings_erasealldata_dlg_title)
+                    .setMessage(R.string.settings_erasealldata_dlg_message)
+                    .setNegativeButton(R.string.Cancel, null)
+                    .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface di, int i)
+                        {
+                            ContentResolver contentResolver = SettingsData.this.getActivity().getContentResolver();
+                            contentResolver.delete(WiFiContract.WiFiSpot.CONTENT_URI, null, null);
+                            contentResolver.delete(WiFiContract.WiFi.CONTENT_URI, null, null);
+                        }
+                    })
+                    .create().show();
+
+                return true;
+            }
+        };
     }
 }

@@ -23,4 +23,9 @@
         android:key="mapshowwep"
         android:defaultValue="true"
     />
+    <PreferenceScreen
+        android:title="@string/settings_erasealldata"
+        android:summary="@string/settings_erasealldata_summary"
+        android:key="erasealldata">
+    </PreferenceScreen>
 </PreferenceScreen>

@@ -47,13 +47,19 @@
     <string name="settings_mapshowsat_title">Show satellite map</string>
     <string name="settings_mapshowlabels_title">Show WiFi labels</string>
     
-    <string name="settings_header_filter">WiFi filters</string>
+    <string name="settings_header_data">Data</string>
     <string name="settings_filterfromdatecheck_title">View only updated WiFis</string>
     <string name="settings_filterfromdate_title">View only WiFis updated after date</string>
     <string name="settings_mapshowopen_title">Show open WiFis</string>
     <string name="settings_mapshowclosed_title">Show closed WiFis</string>
     <string name="settings_mapshowwep_title">Show WEP WiFis</string>
     <string name="settings_mapshowstats_title">Show Statistics</string>
+    <string name="settings_erasealldata">Erase ALL local data</string>
+    <string name="settings_erasealldata_summary">Erasing all local data will not alter the saved WiFi on server side.</string>
+    <string name="settings_erasealldata_dlg_title">Erase ALL Data</string>
+    <string name="settings_erasealldata_dlg_message">
+        <![CDATA[This will erase all the local saved data. The operation affects only the local database, and if you have saved data on the web side, ensure to delete the account there first in order to have a clean slate. If not, the data will return from the server in the next synchronization cycle.]]>
+    </string>
     
     <string name="stats_total_wifi">Total WiFi count:</string>
     <string name="stats_total_open_wifi">Open count:</string>
