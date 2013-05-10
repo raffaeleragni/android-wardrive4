@@ -12,4 +12,9 @@
         android:key="minlevel"
         android:defaultValue="@string/settings_minlevel_defaultvalue" 
     />
+    <CheckBoxPreference
+        android:title="@string/settings_autostartscan_title"
+        android:summary="@string/settings_autostartscan_summary"
+        android:key="autostartscan"
+    />
 </PreferenceScreen>

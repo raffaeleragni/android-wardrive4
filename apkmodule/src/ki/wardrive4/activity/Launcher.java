@@ -28,6 +28,7 @@ import android.util.Log;
 import ki.wardrive4.C;
 import ki.wardrive4.data.WiFiSecurity;
 import ki.wardrive4.provider.wifi.WiFiContract;
+import ki.wardrive4.service.ScanService;
 
 /**
  * Launcher entry point.
@@ -52,12 +53,35 @@ public class Launcher extends Activity
     {
         super.onCreate(savedInstanceState);
         
-        openWiFiFix();
+        try
+        {
+            openWiFiFix();
+        }
+        catch (Exception e)
+        {
+            // Must avoid to raise exceptions here, because in a new installation
+            // this script would not work (database not existing yet)
+        }
+        
+        autoStartCheck();
         
         startActivity(new Intent(this, MapViewer.class));
         finish();
         
         Log.i(TAG, "Created activity: Launcher");
+    }
+    
+    /**
+     * Verifies if the auto start is enabled, and starts the service if it is.
+     */
+    private void autoStartCheck()
+    {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getApplication());
+        if (prefs.getBoolean(Settings.PREF_AUTO_START_SCAN, false))
+        {
+            Intent i = new Intent(this, ScanService.class);
+            startService(i);
+        }
     }
     
     /**

@@ -6,7 +6,7 @@
     <string name="mapviewer_menu_import">Import</string>
     <string name="mapviewer_menu_export">Export</string>
     <string name="mapviewer_menu_start_scanning">Start scanning</string>
-    <string name="mapviewer_menu_scanning">Scanning...</string>
+    <string name="mapviewer_menu_scanning">[Stop] Scanning...</string>
     <string name="mapviewer_menu_settings">Settings</string>
     
     <string name="dlg_import_title">Choose import source</string>
@@ -41,6 +41,8 @@
     <string name="settings_gpserror_summary">Acceptable error of GPS calculation in meters. When error is bigger, WiFi are not scanned. Default is 50.</string>
     <string name="setting_minlevel_title">WiFi strength</string>
     <string name="setting_minlevel_summary">The minimum WiFi strength accepted for scanning. Value is expressed in dBm. Default is -99.</string>
+    <string name="settings_autostartscan_title">Scanning Auto Start</string>
+    <string name="settings_autostartscan_summary">Activates the WiFi scanning on application start</string>
     
     <string name="settings_header_map">Map options</string>
     <string name="settings_mapfollowme_title">Follow my position</string>
