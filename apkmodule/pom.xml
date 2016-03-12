@@ -13,13 +13,13 @@
         <dependency>
             <groupId>android</groupId>
             <artifactId>android</artifactId>
-            <version>4.0.3_r3</version>
+            <version>4.0.3_r5</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.android.maps</groupId>
             <artifactId>maps</artifactId>
-            <version>15_r2</version>
+            <version>15_r3</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -35,12 +35,6 @@
 
     <build>
         <finalName>${project.artifactId}</finalName>
-        <sourceDirectory>src</sourceDirectory>
-        <resources>
-            <resource>
-                <directory>res</directory>
-            </resource>
-        </resources>
         <plugins>
             <!-- COMPILER -->
             <plugin>
@@ -57,7 +51,7 @@
             <plugin>
                 <groupId>com.jayway.maven.plugins.android.generation2</groupId>
                 <artifactId>android-maven-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>4.0.0-rc.2</version>
                 <configuration>
                     <sdk>
                         <!-- platform or api level (api level 14 = platform 4.0)-->

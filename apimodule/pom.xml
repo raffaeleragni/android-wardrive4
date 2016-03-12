@@ -13,7 +13,7 @@
         <dependency>
             <groupId>android</groupId>
             <artifactId>android</artifactId>
-            <version>4.0.3_r3</version>
+            <version>4.0.3_r5</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
